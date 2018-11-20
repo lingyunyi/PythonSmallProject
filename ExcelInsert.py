@@ -10,7 +10,7 @@ class IndexSql(object):
     # 定义一个连接数据库函数
     def connect(self):
         # connent(参数列表[“IP地址”，“数据库账号”， “数据库密码”， “数据库名称”])
-        self.db = pymysql.connect("47.107.57.166", "root", "root", "phone")
+        self.db = pymysql.connect("localhost", "root", "root", "phone")
         # 使用cursor游标，创建一个游标对象cursor
         self.cursor = self.db.cursor()
         return True
