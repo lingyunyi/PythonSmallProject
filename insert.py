@@ -10,7 +10,7 @@ class IndexSql(object):
     # 定义一个连接数据库函数
     def connect(self):
         # connent(参数列表[“IP地址”，“数据库账号”， “数据库密码”， “数据库名称”])
-        self.db = pymysql.connect("localhost", "root", "root", "phone")
+        self.db = pymysql.connect("47.107.57.166", "root", "root", "phone")
         # 使用cursor游标，创建一个游标对象cursor
         self.cursor = self.db.cursor()
         return True
@@ -124,8 +124,7 @@ def search_NameCol_Or_PhoneCol(path):
                 phoneCol = j
                 break
     return nameCol,phoneCol
-def readFile_returnPath(pathFile):
-    pathList = []
+def readFile_returnPath(pathFile,pathList):
     # 获取目录文件下的所有文件
     allFiles = os.listdir(pathFile)
     # 遍历所有文件
@@ -136,6 +135,8 @@ def readFile_returnPath(pathFile):
         if os.path.isfile(path):
             # 加入文件列表
             pathList.append(path)
+        if os.path.isdir(path):
+            readFile_returnPath(path,pathList)
     return pathList
 def mainFunction(pathFile):
     for path in pathList:
@@ -181,10 +182,12 @@ if __name__ == "__main__":
     try:
         # 实例化插入数据库类
         one = IndexSql()
+        # 创建空列表
+        pathList = []
         # 输入文件来源
         pathFile = str(input("请输入路径:"))
         # 获取文件列表
-        pathList = readFile_returnPath(pathFile)
+        pathList = readFile_returnPath(pathFile,pathList)
         # 检索文件链表并且插入数据库
         mainFunction(pathList)
     except BaseException as falseTop:
