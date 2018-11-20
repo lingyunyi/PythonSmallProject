@@ -174,7 +174,7 @@ def mainFunction(pathFile):
                         allPhoneList = one.search()
                         #   重复插入函数执行
                         (trueResult, falseResult,falseTip) = repeatInsert(path, nameList, phoneList, allPhoneList)
-                print("第二次错误提示:",falseTip)
+                print("第二次错误提示：",falseTip)
         else:
             print("文件错误")
             continue
