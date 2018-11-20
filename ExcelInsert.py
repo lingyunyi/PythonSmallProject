@@ -10,7 +10,7 @@ class IndexSql(object):
     # 定义一个连接数据库函数
     def connect(self):
         # connent(参数列表[“IP地址”，“数据库账号”， “数据库密码”， “数据库名称”])
-        self.db = pymysql.connect("localhost", "root", "root", "phone")
+        self.db = pymysql.connect("47.107.57.166", "root", "root", "phone")
         # 使用cursor游标，创建一个游标对象cursor
         self.cursor = self.db.cursor()
         return True
@@ -164,7 +164,7 @@ def mainFunction(pathFile):
                         trueResult += 1
                     else:
                         falseResult += 1
-                print("错误提示：",falseTip)
+                print("第一次结果提示：",falseTip)
                 print("成功次数：%s\n错误次数：%s" % (trueResult, falseResult))
                 # 在执行一次重复插入数据库的函数，如果错误次数大于5次的话。
                 for i in range(1):
