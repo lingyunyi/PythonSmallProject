@@ -164,7 +164,7 @@ def mainFunction(pathFile):
                         trueResult += 1
                     else:
                         falseResult += 1
-                print(falseTip)
+                print("错误提示：",falseTip)
                 print("成功次数：%s\n错误次数：%s" % (trueResult, falseResult))
                 # 在执行一次重复插入数据库的函数，如果错误次数大于5次的话。
                 for i in range(1):
@@ -174,7 +174,7 @@ def mainFunction(pathFile):
                         allPhoneList = one.search()
                         #   重复插入函数执行
                         (trueResult, falseResult,falseTip) = repeatInsert(path, nameList, phoneList, allPhoneList)
-                print("第二次结果:",falseTip)
+                print("第二次错误提示:",falseTip)
         else:
             print("文件错误")
             continue
