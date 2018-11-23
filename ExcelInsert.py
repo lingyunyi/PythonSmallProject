@@ -194,4 +194,5 @@ if __name__ == "__main__":
         mainFunction(pathList)
     except BaseException as falseTop:
         print(falseTop)
+    print("所有文件检索完成等待关闭中……")
     time.sleep(3)
