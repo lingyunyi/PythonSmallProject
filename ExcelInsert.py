@@ -98,6 +98,8 @@ def repeatInsert(path,nameList,phoneList,allPhoneList):
     trueResult = 0
     falseResult = 0
     for i in range(len(nameList)):
+        # 接受参数返回的结果以及提示
+        # 执行数据库插入事件
         result, falseTip = one.insertData(str(nameList[i]), int(phoneList[i]), allPhoneList)
         if result == True:
             trueResult += 1
@@ -134,16 +136,20 @@ def readFile_returnPath(pathFile,pathList):
         path = os.path.join(pathFile,allFiles[i])
         # 如果是文件
         if os.path.isfile(path):
-            # 加入文件列表
-            pathList.append(path)
+            # 判断是否是Excel文件
+            if path.split(".")[-1] == "xls" or path.split(".")[-1] == "xlsx":
+                # 加入文件列表
+                pathList.append(path)
+        # 如果是目录
         if os.path.isdir(path):
+            # 再次遍历传入的文件夹
             readFile_returnPath(path,pathList)
     return pathList
 def mainFunction(pathFile):
     for path in pathList:
         #   判断文件是否为Excel文件
         if path.split(".")[-1] == "xls" or path.split(".")[-1] == "xlsx":
-            print("----------开始检索[---%s---]文件----------" %(str(path).split("\\")[-1]))
+            print("----------开始检索[     %s     ]文件----------" %(str(path).split("\\")[-1]))
             #   执行一次数据库搜索
             allPhoneList = one.search()
             #   获取该文件的名字列，和手机列。
@@ -165,23 +171,23 @@ def mainFunction(pathFile):
                         trueResult += 1
                     else:
                         falseResult += 1
-                print("第一次结果提示：",falseTip)
-                print("成功次数：%s\n错误次数：%s" % (trueResult, falseResult))
+                print("第一次结果提示： ",falseTip)
+                print("成功次数： %s\n错误次数： %s" % (trueResult, falseResult))
                 # 在执行一次重复插入数据库的函数，如果错误次数大于5次的话。
                 for i in range(1):
                     if falseResult >= 5 and str(falseTip) != "Repeat":
-                        print("----------再次检索[---%s---]文件----------" % (str(path).split("\\")[-1]))
+                        print("----------再次检索[     %s     ]文件----------" % (str(path).split("\\")[-1]))
                         #   再次执行数据库查询
                         allPhoneList = one.search()
                         #   重复插入函数执行
                         (trueResult, falseResult,falseTip) = repeatInsert(path, nameList, phoneList, allPhoneList)
-                print("第二次错误提示：",falseTip)
+                print("第二次错误提示： ",falseTip)
         else:
             print("文件错误")
             continue
 
 def loginAdmin():
-    adminAccount = input("请登入管理员账号：")
+    adminAccount = input("请登入管理员账号： ")
     if adminAccount == "lingyunyi":
         return True
     else:
@@ -189,13 +195,13 @@ def loginAdmin():
 if __name__ == "__main__":
     if loginAdmin() == True:
         try:
-            serverIP = input("请输入服务器IP地址：")
+            serverIP = input("请输入服务器IP地址： ")
             # 实例化插入数据库类
             one = IndexSql(serverIP)
             # 创建空列表
             pathList = []
             # 输入文件来源
-            pathFile = str(input("请输入路径："))
+            pathFile = str(input("请输入路径： "))
             # 获取文件列表
             pathList = readFile_returnPath(pathFile,pathList)
             # 检索文件链表并且插入数据库
