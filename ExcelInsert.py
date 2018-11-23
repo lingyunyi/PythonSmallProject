@@ -5,12 +5,13 @@ import xlrd
 import re
 import os
 class IndexSql(object):
-    def __init__(self):
+    def __init__(self,serverIP="localhost"):
         self.phone_pat = re.compile('^(13\d|14[5|7]|15\d|166|17[3|6|7]|18\d)\d{8}$')
+        self.serverIP = str(serverIP)
     # 定义一个连接数据库函数
     def connect(self):
         # connent(参数列表[“IP地址”，“数据库账号”， “数据库密码”， “数据库名称”])
-        self.db = pymysql.connect("localhost", "root", "root", "phone")
+        self.db = pymysql.connect(self.serverIP, "root", "root", "phone")
         # 使用cursor游标，创建一个游标对象cursor
         self.cursor = self.db.cursor()
         return True
@@ -120,7 +121,7 @@ def search_NameCol_Or_PhoneCol(path):
     for j in range(colsLen):
         phoneS = sheetTable.col_values(j)
         for phone in phoneS:
-            if str(phone) == "联系方式" or str(phone) == "电话号码" or str(phone) == "联系电话":
+            if str(phone) == "联系方式" or str(phone) == "电话号码" or str(phone) == "联系电话" or str(phone) == "电话":
                 phoneCol = j
                 break
     return nameCol,phoneCol
@@ -180,12 +181,13 @@ def mainFunction(pathFile):
             continue
 if __name__ == "__main__":
     try:
+        serverIP = input("请输入服务器IP地址：")
         # 实例化插入数据库类
-        one = IndexSql()
+        one = IndexSql(serverIP)
         # 创建空列表
         pathList = []
         # 输入文件来源
-        pathFile = str(input("请输入路径:"))
+        pathFile = str(input("请输入路径："))
         # 获取文件列表
         pathList = readFile_returnPath(pathFile,pathList)
         # 检索文件链表并且插入数据库
