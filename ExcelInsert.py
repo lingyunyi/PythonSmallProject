@@ -179,20 +179,31 @@ def mainFunction(pathFile):
         else:
             print("文件错误")
             continue
+
+def loginAdmin():
+    adminAccount = input("请登入管理员账号：")
+    if adminAccount == "lingyunyi":
+        return True
+    else:
+        return False
 if __name__ == "__main__":
-    try:
-        serverIP = input("请输入服务器IP地址：")
-        # 实例化插入数据库类
-        one = IndexSql(serverIP)
-        # 创建空列表
-        pathList = []
-        # 输入文件来源
-        pathFile = str(input("请输入路径："))
-        # 获取文件列表
-        pathList = readFile_returnPath(pathFile,pathList)
-        # 检索文件链表并且插入数据库
-        mainFunction(pathList)
-    except BaseException as falseTop:
-        print(falseTop)
-    print("所有文件检索完成等待关闭中……")
-    time.sleep(3)
+    if loginAdmin() == True:
+        try:
+            serverIP = input("请输入服务器IP地址：")
+            # 实例化插入数据库类
+            one = IndexSql(serverIP)
+            # 创建空列表
+            pathList = []
+            # 输入文件来源
+            pathFile = str(input("请输入路径："))
+            # 获取文件列表
+            pathList = readFile_returnPath(pathFile,pathList)
+            # 检索文件链表并且插入数据库
+            mainFunction(pathList)
+        except BaseException as falseTop:
+            print(falseTop)
+        print("所有文件检索完成等待关闭中……")
+        time.sleep(3)
+    else:
+        print("错误，程序将在3秒钟后关闭……")
+        time.sleep(3)
