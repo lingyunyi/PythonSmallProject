@@ -24,29 +24,31 @@ class IndexSql(object):
         return True
     # 定义一个插入数据库的函数
     def insertData(self, name, phone,allPhoneList):
-        if str(phone) not in allPhoneList:
-            if re.match(self.phone_pat,str(phone)) != None and allPhoneList != False:
-                # time.time() 是时间戳 time.localtime 可以将时间戳转换成当地时间 time.strftime 是将localtime时间格式化
-                nowTime = time.strftime('%Y-%m-%d', time.localtime(time.time()))
-                # SQL插入语句 insert into 表名（数据） values（值）
-                sql = '''INSERT INTO phonedata (Date, Name, Phone) Values ("%s", "%s", "%s")''' % (nowTime, name, phone)
-                # 输出传入的值
-                # print(nowTime,name,phone)
-                try:
-                    # 连接数据库
-                    self.connect()
-                    # 执行sql语句
-                    self.cursor.execute(sql)
-                    # 提交到数据库执行
-                    self.db.commit()
-                    # 关闭数据库
-                    self.close()
-                    return True ,"insertTure"
-                except:
-                    self.db.rollback()
-                return False ,"inserFalse"
-            return False ,"searchFalse_Or_phoneFalse"
-        return False ,"Repeat"
+        if allPhoneList != False:
+            if str(phone) not in allPhoneList:
+                if re.match(self.phone_pat,str(phone)) != None:
+                    # time.time() 是时间戳 time.localtime 可以将时间戳转换成当地时间 time.strftime 是将localtime时间格式化
+                    nowTime = time.strftime('%Y-%m-%d', time.localtime(time.time()))
+                    # SQL插入语句 insert into 表名（数据） values（值）
+                    sql = '''INSERT INTO phonedata (Date, Name, Phone) Values ("%s", "%s", "%s")''' % (nowTime, name, phone)
+                    # 输出传入的值
+                    # print(nowTime,name,phone)
+                    try:
+                        # 连接数据库
+                        self.connect()
+                        # 执行sql语句
+                        self.cursor.execute(sql)
+                        # 提交到数据库执行
+                        self.db.commit()
+                        # 关闭数据库
+                        self.close()
+                        return True ,"insertTure"
+                    except:
+                        self.db.rollback()
+                    return False ,"inserFalse"
+                return False ,"PhoneFalse"
+            return False ,"Repeat"
+        return False ,"SearchFalse"
     # 定义一个查询参数
     def search(self):
         sql = '''SELECT * FROM phonedata'''
@@ -100,12 +102,12 @@ def repeatInsert(path,nameList,phoneList,allPhoneList):
     for i in range(len(nameList)):
         # 接受参数返回的结果以及提示
         # 执行数据库插入事件
-        result, falseTip = one.insertData(str(nameList[i]), int(phoneList[i]), allPhoneList)
+        result, newfalseTip = one.insertData(str(nameList[i]), int(phoneList[i]), allPhoneList)
         if result == True:
             trueResult += 1
         else:
             falseResult += 1
-    return trueResult,falseResult,falseTip
+    return trueResult,falseResult,newfalseTip
 def search_NameCol_Or_PhoneCol(path):
     # 打开excel表格
     worker = xlrd.open_workbook(u'%s' %(str(path)))
@@ -118,7 +120,7 @@ def search_NameCol_Or_PhoneCol(path):
     for i in range(colsLen):
         nameS = sheetTable.col_values(i)
         for name in nameS:
-            if str(name) == "本人姓名" or str(name) == "姓名" or str(name) == "名字":
+            if str(name) == "本人姓名" or str(name) == "姓名" or str(name) == "名字" or str(name) == "本人名字":
                 nameCol = i
     for j in range(colsLen):
         phoneS = sheetTable.col_values(j)
@@ -149,45 +151,52 @@ def mainFunction(pathFile):
     for path in pathList:
         #   判断文件是否为Excel文件
         if path.split(".")[-1] == "xls" or path.split(".")[-1] == "xlsx":
-            print("----------开始检索[     %s     ]文件----------" %(str(path).split("\\")[-1]))
             #   执行一次数据库搜索
             allPhoneList = one.search()
+            #   如果数据库搜索错误直接打断
+            if allPhoneList == False:
+                print("BigTip：错误的数据库连接以及搜索。")
+                break
+            print("Tip：----------开始检索[     %s     ]文件----------" %(str(path).split("\\")[-1]))
             #   获取该文件的名字列，和手机列。
             (nameCol,phoneCol) = search_NameCol_Or_PhoneCol(path)
             #   判断手机列或者号码列是否有错误。
             if nameCol >= phoneCol or phoneCol == 0 or phoneCol == None or nameCol == None:
-                print("False nameCol and phoneCol ")
+                print("BigTip：Excel表格中未包含有姓名以及电话的列表。")
             else:
                 #   获取名字列表，还有，手机列表。
                 (nameList,phoneList) = readNameAndPhone(path,nameCol,phoneCol)
-                trueResult = 0
-                falseResult = 0
-                if phoneList == 0:
-                    break
-                # 开始执行插入，以名字列表的长度为插入次数。
-                for i in range(len(nameList)):
-                    result,falseTip = one.insertData(str(nameList[i]),int(phoneList[i]),allPhoneList)
-                    if result == True:
-                        trueResult += 1
-                    else:
-                        falseResult += 1
-                print("第一次结果提示： ",falseTip)
-                print("成功次数： %s\n错误次数： %s" % (trueResult, falseResult))
-                # 在执行一次重复插入数据库的函数，如果错误次数大于5次的话。
-                for i in range(1):
-                    if falseResult >= 5 and str(falseTip) != "Repeat":
-                        print("----------再次检索[     %s     ]文件----------" % (str(path).split("\\")[-1]))
-                        #   再次执行数据库查询
-                        allPhoneList = one.search()
-                        #   重复插入函数执行
-                        (trueResult, falseResult,falseTip) = repeatInsert(path, nameList, phoneList, allPhoneList)
-                print("第二次错误提示： ",falseTip)
+                #   判断获得的名字列表或者手机列表的长度是否大于0
+                if len(nameList) > 0 and len(phoneList) > 0:
+                    trueResult = 0
+                    falseResult = 0
+                    if phoneList == 0:
+                        break
+                    # 开始执行插入，以名字列表的长度为插入次数。
+                    for i in range(len(nameList)):
+                        result,falseTip = one.insertData(str(nameList[i]),int(phoneList[i]),allPhoneList)
+                        if result == True:
+                            trueResult += 1
+                        else:
+                            falseResult += 1
+                    print("Tip：第一次结果提示 :",falseTip)
+                    print("Tip：成功次数 :%s\nTip：错误次数 :%s" % (trueResult, falseResult))
+                    # 在执行一次重复插入数据库的函数，如果错误次数大于5次的话。
+                    for i in range(1):
+                        if falseResult >= 5 and str(falseTip) != "Repeat":
+                            print("Tip：----------再次检索[     %s     ]文件----------" % (str(path).split("\\")[-1]))
+                            #   再次执行数据库查询
+                            allPhoneList = one.search()
+                            #   重复插入函数执行
+                            (trueResult, falseResult,falseTip) = repeatInsert(path, nameList, phoneList, allPhoneList)
+                    print("Tip：第二次错误提示 :",falseTip)
+                else:
+                    print("BigTip：Excle表格中含有姓名和电话的列表--->可惜没有数据。")
         else:
-            print("文件错误")
+            print("BigTip：文件错误。")
             continue
-
 def loginAdmin():
-    adminAccount = input("请登入管理员账号： ")
+    adminAccount = input("BigTip：请登入管理员账号 :")
     if adminAccount == "lingyunyi":
         return True
     else:
@@ -195,21 +204,23 @@ def loginAdmin():
 if __name__ == "__main__":
     if loginAdmin() == True:
         try:
-            serverIP = input("请输入服务器IP地址： ")
+            serverIP = input("BigTip：请输入服务器IP地址 :")
             # 实例化插入数据库类
             one = IndexSql(serverIP)
             # 创建空列表
             pathList = []
             # 输入文件来源
-            pathFile = str(input("请输入路径： "))
+            pathFile = str(input("BigTip：请输入路径 :"))
             # 获取文件列表
             pathList = readFile_returnPath(pathFile,pathList)
             # 检索文件链表并且插入数据库
             mainFunction(pathList)
         except BaseException as falseTop:
             print(falseTop)
-        print("所有文件检索完成等待关闭中……")
-        time.sleep(3)
+        while True:
+            anyKey = input("\nBigTip：异常--->请输入任意字符关闭:")
+            if anyKey != None:
+                break
     else:
-        print("错误，程序将在3秒钟后关闭……")
-        time.sleep(3)
+        print("BigTip：错误--->程序将在5秒钟后关闭……")
+        time.sleep(5)
