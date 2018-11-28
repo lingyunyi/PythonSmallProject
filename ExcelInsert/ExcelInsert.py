@@ -155,47 +155,51 @@ def mainFunction(pathFile):
     for path in pathList:
         #   判断文件是否为Excel文件
         if path.split(".")[-1] == "xls" or path.split(".")[-1] == "xlsx":
-            #   执行一次数据库搜索
-            allPhoneList = one.search()
-            #   如果数据库搜索错误直接打断
-            if allPhoneList == False:
-                print("BigTip：错误的数据库连接以及搜索。")
-                break
-            print("Tip：----------开始检索[     %s     ]文件----------" %(str(path).split("\\")[-1]))
-            #   获取该文件的名字列，和手机列。
-            (nameCol,phoneCol) = search_NameCol_Or_PhoneCol(path)
-            #   判断手机列或者号码列是否有错误。
-            if nameCol >= phoneCol or phoneCol == 0 or phoneCol == None or nameCol == None:
-                print("BigTip：Excel表格中未包含有姓名以及电话的列表。")
-            else:
-                #   获取名字列表，还有，手机列表。
-                (nameList,phoneList) = readNameAndPhone(path,nameCol,phoneCol)
-                #   判断获得的名字列表或者手机列表的长度是否大于0
-                if len(nameList) > 0 and len(phoneList) > 0:
-                    trueResult = 0
-                    falseResult = 0
-                    if phoneList == 0:
-                        break
-                    # 开始执行插入，以名字列表的长度为插入次数。
-                    for i in range(len(nameList)):
-                        result,falseTip = one.insertData(str(nameList[i]),int(phoneList[i]),allPhoneList)
-                        if result == True:
-                            trueResult += 1
-                        else:
-                            falseResult += 1
-                    print("Tip：第一次结果提示 :",falseTip)
-                    print("Tip：成功次数 :%s\nTip：错误次数 :%s" % (trueResult, falseResult))
-                    # 在执行一次重复插入数据库的函数，如果错误次数大于5次的话。
-                    for i in range(1):
-                        if falseResult >= 5 and str(falseTip) != "Repeat":
-                            print("Tip：----------再次检索[     %s     ]文件----------" % (str(path).split("\\")[-1]))
-                            #   再次执行数据库查询
-                            allPhoneList = one.search()
-                            #   重复插入函数执行
-                            (trueResult, falseResult,falseTip) = repeatInsert(path, nameList, phoneList, allPhoneList)
-                    print("Tip：第二次错误提示 :",falseTip)
+            try:
+                #   执行一次数据库搜索
+                allPhoneList = one.search()
+                #   如果数据库搜索错误直接打断
+                if allPhoneList == False:
+                    print("BigTip：错误的数据库连接以及搜索。")
+                    break
+                print("Tip：----------开始检索[     %s     ]文件----------" %(str(path).split("\\")[-1]))
+                #   获取该文件的名字列，和手机列。
+                (nameCol,phoneCol) = search_NameCol_Or_PhoneCol(path)
+                #   判断手机列或者号码列是否有错误。
+                if nameCol >= phoneCol or phoneCol == 0 or phoneCol == None or nameCol == None:
+                    print("BigTip：Excel表格中未包含有姓名以及电话的列表。")
                 else:
-                    print("BigTip：Excle表格中含有姓名和电话的列表--->可惜没有数据。")
+                    #   获取名字列表，还有，手机列表。
+                    (nameList,phoneList) = readNameAndPhone(path,nameCol,phoneCol)
+                    #   判断获得的名字列表或者手机列表的长度是否大于0
+                    if len(nameList) > 0 and len(phoneList) > 0:
+                        trueResult = 0
+                        falseResult = 0
+                        if phoneList == 0:
+                            break
+                        # 开始执行插入，以名字列表的长度为插入次数。
+                        for i in range(len(nameList)):
+                            result,falseTip = one.insertData(str(nameList[i]),int(phoneList[i]),allPhoneList)
+                            if result == True:
+                                trueResult += 1
+                            else:
+                                falseResult += 1
+                        print("Tip：第一次结果提示 :",falseTip)
+                        print("Tip：成功次数 :%s\nTip：错误次数 :%s" % (trueResult, falseResult))
+                        # 在执行一次重复插入数据库的函数，如果错误次数大于5次的话。
+                        for i in range(1):
+                            if falseResult >= 5 and str(falseTip) != "Repeat":
+                                print("Tip：----------再次检索[     %s     ]文件----------" % (str(path).split("\\")[-1]))
+                                #   再次执行数据库查询
+                                allPhoneList = one.search()
+                                #   重复插入函数执行
+                                (trueResult, falseResult,falseTip) = repeatInsert(path, nameList, phoneList, allPhoneList)
+                        print("Tip：第二次错误提示 :",falseTip)
+                    else:
+                        print("BigTip：Excle表格中含有姓名和电话的列表--->可惜没有数据。")
+            except BaseException as tip:
+                print("BedFalse：",tip)
+                continue
         else:
             print("BigTip：文件错误。")
             continue
