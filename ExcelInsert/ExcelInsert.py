@@ -148,7 +148,7 @@ def readFile_returnPath(pathFile,pathList):
                 # 再次遍历传入的文件夹
                 readFile_returnPath(path,pathList)
         except BaseException as tip:
-            print("BedFalse：",tip)
+            print("read-BedFalse：",tip)
             continue
     return pathList
 def mainFunction(pathFile):
@@ -179,11 +179,15 @@ def mainFunction(pathFile):
                             break
                         # 开始执行插入，以名字列表的长度为插入次数。
                         for i in range(len(nameList)):
-                            result,falseTip = one.insertData(str(nameList[i]),int(phoneList[i]),allPhoneList)
-                            if result == True:
-                                trueResult += 1
-                            else:
-                                falseResult += 1
+                            try:
+                                result,falseTip = one.insertData(str(nameList[i]),int(phoneList[i]),allPhoneList)
+                                if result == True:
+                                    trueResult += 1
+                                else:
+                                    falseResult += 1
+                            except BaseException as tip:
+                                print("inser-BedFalse：",tip)
+                                continue
                         print("Tip：第一次结果提示 :",falseTip)
                         print("Tip：成功次数 :%s\nTip：错误次数 :%s" % (trueResult, falseResult))
                         # 在执行一次重复插入数据库的函数，如果错误次数大于5次的话。
@@ -198,7 +202,7 @@ def mainFunction(pathFile):
                     else:
                         print("BigTip：Excle表格中含有姓名和电话的列表--->可惜没有数据。")
             except BaseException as tip:
-                print("BedFalse：",tip)
+                print("main-BedFalse：",tip)
                 continue
         else:
             print("BigTip：文件错误。")
