@@ -84,12 +84,20 @@ def readNameAndPhone(path,namecol,phonecol):
     for i in range(sheetTable.nrows):
         # 获取Phone列的值
         phone = sheetTable.cell_value(i,phonecol)
+        # 判断手机号，是否为中文，是否为英文，是否够11位数，
         if re.match("[\\u4e00-\\u9fa5]+|[a-zA-z]+|\d{1,10}\s+|^\s+",str(phone)) != None:
             continue
+        # 判断电话数据是否为整数
+        try:
+            if phone != "":
+                int(phone)
+        except BaseException as tip:
+            print("read-[%s]-data-False："%i, tip)
+            continue
         if phone != None and phone != "" and re.match(one.phone_pat,str(int(phone))) != None:
-            #   同时获得该行的姓名
+            # 判断电话数据是否为整数
             name = sheetTable.cell_value(i,namecol)
-            if name == "" :
+            if name == "":
                 continue
             #   加入名字列表
             nameList.append(name)
