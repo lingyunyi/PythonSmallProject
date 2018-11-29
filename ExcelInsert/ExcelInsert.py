@@ -75,7 +75,7 @@ def readNameAndPhone(path,namecol,phonecol):
     # 打开excel表格
     worker = xlrd.open_workbook(u'%s' %(str(path)))
     # 获取所有的sheet
-    ExcelTables = worker.sheet_names()
+    # ExcelTables = worker.sheet_names()
     # 使用下标为0的sheet
     sheetTable = worker.sheet_by_index(0)
     # 获取所有单元格中的手机号码
@@ -95,8 +95,9 @@ def readNameAndPhone(path,namecol,phonecol):
             print("read-[%s]-data-False："%i, tip)
             continue
         if phone != None and phone != "" and re.match(one.phone_pat,str(int(phone))) != None:
-            # 判断电话数据是否为整数
+            # 获取名字值
             name = sheetTable.cell_value(i,namecol)
+            # 名字是否为空
             if name == "":
                 continue
             #   加入名字列表
