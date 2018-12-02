@@ -1,6 +1,6 @@
 import requests
 import re
-
+import time
 class NewsScrapy(object):
     def __init__(self):
         # 全部内容的List
@@ -121,16 +121,41 @@ class NewsScrapy(object):
                 newsName = i[1].replace("&nbsp; ", "")
                 resultsList.extend([newsName, newsUrl])
         return resultsList
-    def mainStart(self):
+    def saveText(self):
         '''
-
+            文件保存
         :return:
         '''
-        pass
-        return
-
+        self.mainStart()
+        fp = open("%s.txt"%(int(time.time())),"w+",encoding="utf-8")
+        for i in self.allList:
+            fp.write(i)
+            fp.write("\n")
+        fp.close()
+        return True
+    def mainStart(self):
+        '''
+            多层爬虫启动
+        :return:
+        '''
+        start1 = self.virusDynamics2017News()
+        self.allList.extend(start1)
+        start2 = self.virusDynamics2018News()
+        self.allList.extend(start2)
+        start3 = self.blackmailSoftwareNews()
+        self.allList.extend(start3)
+        start4 = self.centerDynamicsNews()
+        self.allList.extend(start4)
+        start5 = self.testResultNews()
+        self.allList.extend(start5)
+        start6 = self.forensicsProductsNews()
+        self.allList.extend(start6)
+        return True
 if __name__ == "__main__":
     one = NewsScrapy()
-    a = one.forensicsProductsNews()
-    for i in a:
-        print(i)
+    # 开始爬虫并且直接下载
+    one.saveText()
+    # 只启用爬虫不下载
+    # one.mainStart()
+    # 开启爬虫并输出文件
+    # print(one.allList)
