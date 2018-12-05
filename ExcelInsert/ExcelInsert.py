@@ -129,12 +129,12 @@ def search_NameCol_Or_PhoneCol(path):
     for i in range(colsLen):
         nameS = sheetTable.col_values(i)
         for name in nameS:
-            if str(name) == "本人姓名" or str(name) == "姓名" or str(name) == "名字" or str(name) == "本人名字":
+            if matchString(phone) == True:
                 nameCol = i
     for j in range(colsLen):
         phoneS = sheetTable.col_values(j)
         for phone in phoneS:
-            if str(phone) == "联系方式" or str(phone) == "电话号码" or str(phone) == "联系电话" or str(phone) == "电话":
+            if matchString(phone) == True:
                 phoneCol = j
                 break
     return nameCol,phoneCol
@@ -222,7 +222,36 @@ def loginAdmin():
         return True
     else:
         return False
+def printVersion():
+    print("\n")
+    print("\n")
+    print("\n")
+    print("\n")
+    print("\n")
+    print("*************************************************")
+    print("****                                         ****")
+    print("****                                         ****")
+    print("****           欢迎使用兔子自动精灵          ****")
+    print("****                                         ****")
+    print("****              版本：V2.0                 ****")
+    print("****                                         ****")
+    print("****              作者：匿名                 ****")
+    print("****                                         ****")
+    print("****                                         ****")
+    print("*************************************************")
+    time.sleep(3)
+    print("\n")
+    print("\n")
+    print("\n")
+    print("\n")
+    print("\n")
+def matchString(pattern):
+    if re.search(str(pattern),"本人姓名本人名字name联系方式电话号码联系电话本人电话Phone手机号码手机电话本人电话本人号码联系号码",re.I) != None:
+        return True
+    else:
+        return False
 if __name__ == "__main__":
+    printVersion()
     if loginAdmin() == True:
         try:
             serverIP = input("BigTip：请输入服务器IP地址 :")
