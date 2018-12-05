@@ -152,7 +152,6 @@ def search_NameCol_Or_PhoneCol(path):
         # 遍历5行数据中的内容
         for name in nameS:
             if matchStringName(name) == True:
-                print(name,i)
                 nameCol = i
                 break
     for j in range(colsLen):
@@ -161,7 +160,6 @@ def search_NameCol_Or_PhoneCol(path):
         # 遍历5行数据中的内容
         for phone in phoneS:
             if matchStringPhone(phone) == True:
-                print(phone,j)
                 phoneCol = j
                 break
     return nameCol,phoneCol
@@ -194,7 +192,7 @@ def readFile_returnPath(pathFile,pathList):
             print("read-function-BedFalse：",tip)
             continue
     return pathList
-def mainFunction(fileList):
+def mainFunction(fileList,allTrueResult,allFalseResult):
     '''
         主要执行函数
     :param fileList:
@@ -209,7 +207,7 @@ def mainFunction(fileList):
                     allPhoneList = one.search()
                     #   如果数据库搜索错误直接打断
                     if allPhoneList == False:
-                        print("BigTip：错误的数据库连接以及搜索。")
+                        print("MysqlFalseTip：错误的数据库连接以及搜索。")
                         break
                     print("Tip：----------开始检索[     %s     ]文件----------" %(str(path).split("\\")[-1]))
                     #   获取该文件的名字列，和手机列。
@@ -238,6 +236,9 @@ def mainFunction(fileList):
                                     print("inser-BedFalse：",tip)
                                     continue
                             print("Tip：第一次结果提示 :",falseTip)
+                            # 统计全部成功错误次数
+                            allTrueResult += trueResult
+                            allFalseResult += falseResult
                             print("Tip：成功次数 :%s\nTip：错误次数 :%s" % (trueResult, falseResult))
                             # 在执行一次重复插入数据库的函数，如果错误次数大于5次的话。
                             for i in range(1):
@@ -258,6 +259,8 @@ def mainFunction(fileList):
                 continue
     else:
         print("BigTip：检索目录为空。")
+    #  返回最终结果
+    return allTrueResult,allFalseResult
 def loginAdmin():
     adminAccount = input("BigTip：请登入管理员账号 :")
     if adminAccount == "lingyunyi":
@@ -269,8 +272,6 @@ def printVersion():
         版本界面
     :return:
     '''
-    print("\n")
-    print("\n")
     print("\n")
     print("*************************************************")
     print("****                                         ****")
@@ -284,8 +285,6 @@ def printVersion():
     print("****                                         ****")
     print("*************************************************")
     time.sleep(1)
-    print("\n")
-    print("\n")
     print("\n")
 def matchStringName(pattern):
     '''
@@ -309,6 +308,19 @@ def matchStringPhone(pattern):
             return True
         else:
             return False
+def finalResult(allsum,in_allTrueResult,in_allFalseResult):
+    if in_allFalseResult != None or in_allTrueResult != None:
+        print("*************************************************")
+        print("****                                         ****")
+        print("****                                         ****")
+        print("****           遍历文件总数：[%s]             ****" % (str(allsum)))
+        print("****                                         ****")
+        print("****           最终成功次数：[%s]             ****" % (str(in_allTrueResult)))
+        print("****                                         ****")
+        print("****           最终失败次数：[%s]             ****" % (str(in_allFalseResult)))
+        print("****                                         ****")
+        print("****                                         ****")
+        print("*************************************************")
 if __name__ == "__main__":
     printVersion()
     if loginAdmin() == True:
@@ -323,7 +335,14 @@ if __name__ == "__main__":
             # 获取文件列表
             fileList = readFile_returnPath(pathFile,pathList)
             # 检索文件链表并且插入数据库
-            mainFunction(fileList)
+            allTrueResult = 0
+            allFalseResult = 0
+            # 返回全部次数结果
+            (res_allTrueResult,res_allFalseResult) = mainFunction(fileList,allTrueResult,allFalseResult)
+            print("\n")
+            ("--------------------最终结果界面--------------------")
+            # 执行最终结果函数
+            finalResult(len(fileList), res_allTrueResult, res_allFalseResult)
         except BaseException as falseTop:
             print(falseTop)
         while True:
