@@ -72,6 +72,13 @@ class IndexSql(object):
         # 成功就返回插入的列表
         return resultsList
 def readNameAndPhone(path,namecol,phonecol):
+    '''
+        阅读Ecxcel中的所有数据，并将其保存入一个列表
+    :param path:
+    :param namecol:
+    :param phonecol:
+    :return:
+    '''
     # 打开excel表格
     worker = xlrd.open_workbook(u'%s' %(str(path)))
     # 获取所有的sheet
@@ -106,6 +113,14 @@ def readNameAndPhone(path,namecol,phonecol):
             phoneList.append(phone)
     return nameList,phoneList
 def repeatInsert(path,nameList,phoneList,allPhoneList):
+    '''
+        错误之后，重复执行的函数
+    :param path:
+    :param nameList:
+    :param phoneList:
+    :param allPhoneList:
+    :return:
+    '''
     trueResult = 0
     falseResult = 0
     for i in range(len(nameList)):
@@ -118,6 +133,11 @@ def repeatInsert(path,nameList,phoneList,allPhoneList):
             falseResult += 1
     return trueResult,falseResult,newfalseTip
 def search_NameCol_Or_PhoneCol(path):
+    '''
+        查询，excel中所含有姓名以及电话的行数
+    :param path:
+    :return:
+    '''
     # 打开excel表格
     worker = xlrd.open_workbook(u'%s' %(str(path)))
     # 使用下标为0的sheet
@@ -127,18 +147,31 @@ def search_NameCol_Or_PhoneCol(path):
     nameCol = 0
     phoneCol = 0
     for i in range(colsLen):
-        nameS = sheetTable.col_values(i)
+        # 只获取5行之内的数据
+        nameS = sheetTable.col_values(i,0,5)
+        # 遍历5行数据中的内容
         for name in nameS:
-            if matchString(phone) == True:
+            if matchStringName(name) == True:
+                print(name,i)
                 nameCol = i
+                break
     for j in range(colsLen):
-        phoneS = sheetTable.col_values(j)
+        # 只获取5行之内的数据
+        phoneS = sheetTable.col_values(j,0,5)
+        # 遍历5行数据中的内容
         for phone in phoneS:
-            if matchString(phone) == True:
+            if matchStringPhone(phone) == True:
+                print(phone,j)
                 phoneCol = j
                 break
     return nameCol,phoneCol
 def readFile_returnPath(pathFile,pathList):
+    '''
+        获取传入目录下的所有文件以及目录
+    :param pathFile:
+    :param pathList:
+    :return:
+    '''
     # 获取目录文件下的所有文件
     allFiles = os.listdir(pathFile)
     # 遍历所有文件
@@ -152,70 +185,79 @@ def readFile_returnPath(pathFile,pathList):
                 if path.split(".")[-1] == "xls" or path.split(".")[-1] == "xlsx":
                     # 加入文件列表
                     pathList.append(path)
+                    continue # 跳出此次循环
             # 如果是目录
             if os.path.isdir(path):
                 # 再次遍历传入的文件夹
                 readFile_returnPath(path,pathList)
         except BaseException as tip:
-            print("read-BedFalse：",tip)
+            print("read-function-BedFalse：",tip)
             continue
     return pathList
-def mainFunction(pathFile):
-    for path in pathList:
-        #   判断文件是否为Excel文件
-        if path.split(".")[-1] == "xls" or path.split(".")[-1] == "xlsx":
-            try:
-                #   执行一次数据库搜索
-                allPhoneList = one.search()
-                #   如果数据库搜索错误直接打断
-                if allPhoneList == False:
-                    print("BigTip：错误的数据库连接以及搜索。")
-                    break
-                print("Tip：----------开始检索[     %s     ]文件----------" %(str(path).split("\\")[-1]))
-                #   获取该文件的名字列，和手机列。
-                (nameCol,phoneCol) = search_NameCol_Or_PhoneCol(path)
-                #   判断手机列或者号码列是否有错误。
-                if nameCol >= phoneCol or phoneCol == 0 or phoneCol == None or nameCol == None:
-                    print("BigTip：Excel表格中未包含有姓名以及电话的列表。")
-                else:
-                    #   获取名字列表，还有，手机列表。
-                    (nameList,phoneList) = readNameAndPhone(path,nameCol,phoneCol)
-                    #   判断获得的名字列表或者手机列表的长度是否大于0
-                    if len(nameList) > 0 and len(phoneList) > 0:
-                        trueResult = 0
-                        falseResult = 0
-                        if phoneList == 0:
-                            break
-                        # 开始执行插入，以名字列表的长度为插入次数。
-                        for i in range(len(nameList)):
-                            try:
-                                result,falseTip = one.insertData(str(nameList[i]),int(phoneList[i]),allPhoneList)
-                                if result == True:
-                                    trueResult += 1
-                                else:
-                                    falseResult += 1
-                            except BaseException as tip:
-                                print("inser-BedFalse：",tip)
-                                continue
-                        print("Tip：第一次结果提示 :",falseTip)
-                        print("Tip：成功次数 :%s\nTip：错误次数 :%s" % (trueResult, falseResult))
-                        # 在执行一次重复插入数据库的函数，如果错误次数大于5次的话。
-                        for i in range(1):
-                            if falseResult >= 5 and str(falseTip) != "Repeat":
-                                print("Tip：----------再次检索[     %s     ]文件----------" % (str(path).split("\\")[-1]))
-                                #   再次执行数据库查询
-                                allPhoneList = one.search()
-                                #   重复插入函数执行
-                                (trueResult, falseResult,falseTip) = repeatInsert(path, nameList, phoneList, allPhoneList)
-                        print("Tip：第二次错误提示 :",falseTip)
+def mainFunction(fileList):
+    '''
+        主要执行函数
+    :param fileList:
+    :return:
+    '''
+    if len(fileList) != []:
+        for path in fileList:
+            #   判断文件是否为Excel文件
+            if path.split(".")[-1] == "xls" or path.split(".")[-1] == "xlsx":
+                try:
+                    #   执行一次数据库搜索
+                    allPhoneList = one.search()
+                    #   如果数据库搜索错误直接打断
+                    if allPhoneList == False:
+                        print("BigTip：错误的数据库连接以及搜索。")
+                        break
+                    print("Tip：----------开始检索[     %s     ]文件----------" %(str(path).split("\\")[-1]))
+                    #   获取该文件的名字列，和手机列。
+                    (nameCol,phoneCol) = search_NameCol_Or_PhoneCol(path)
+                    #   判断手机列或者号码列是否有错误。
+                    if nameCol >= phoneCol or phoneCol == 0 or phoneCol == None or nameCol == None:
+                        print("BigTip：Excel表格中未包含有姓名以及电话的列表。")
                     else:
-                        print("BigTip：Excle表格中含有姓名和电话的列表--->可惜没有数据。")
-            except BaseException as tip:
-                print("main-BedFalse：",tip)
+                        #   获取名字列表，还有，手机列表。
+                        (nameList,phoneList) = readNameAndPhone(path,nameCol,phoneCol)
+                        #   判断获得的名字列表或者手机列表的长度是否大于0
+                        if len(nameList) > 0 and len(phoneList) > 0:
+                            trueResult = 0
+                            falseResult = 0
+                            if phoneList == 0:
+                                break
+                            # 开始执行插入，以名字列表的长度为插入次数。
+                            for i in range(len(nameList)):
+                                try:
+                                    result,falseTip = one.insertData(str(nameList[i]),int(phoneList[i]),allPhoneList)
+                                    if result == True:
+                                        trueResult += 1
+                                    else:
+                                        falseResult += 1
+                                except BaseException as tip:
+                                    print("inser-BedFalse：",tip)
+                                    continue
+                            print("Tip：第一次结果提示 :",falseTip)
+                            print("Tip：成功次数 :%s\nTip：错误次数 :%s" % (trueResult, falseResult))
+                            # 在执行一次重复插入数据库的函数，如果错误次数大于5次的话。
+                            for i in range(1):
+                                if falseResult >= 5 and str(falseTip) != "Repeat":
+                                    print("Tip：----------再次检索[     %s     ]文件----------" % (str(path).split("\\")[-1]))
+                                    #   再次执行数据库查询
+                                    allPhoneList = one.search()
+                                    #   重复插入函数执行
+                                    (trueResult, falseResult,falseTip) = repeatInsert(path, nameList, phoneList, allPhoneList)
+                            print("Tip：第二次错误提示 :",falseTip)
+                        else:
+                            print("BigTip：Excle表格中含有姓名和电话的列表--->可惜没有数据。")
+                except BaseException as tip:
+                    print("main-BedFalse：",tip)
+                    continue
+            else:
+                print("BigTip：文件错误。")
                 continue
-        else:
-            print("BigTip：文件错误。")
-            continue
+    else:
+        print("BigTip：检索目录为空。")
 def loginAdmin():
     adminAccount = input("BigTip：请登入管理员账号 :")
     if adminAccount == "lingyunyi":
@@ -223,8 +265,10 @@ def loginAdmin():
     else:
         return False
 def printVersion():
-    print("\n")
-    print("\n")
+    '''
+        版本界面
+    :return:
+    '''
     print("\n")
     print("\n")
     print("\n")
@@ -239,17 +283,32 @@ def printVersion():
     print("****                                         ****")
     print("****                                         ****")
     print("*************************************************")
-    time.sleep(3)
+    time.sleep(1)
     print("\n")
     print("\n")
     print("\n")
-    print("\n")
-    print("\n")
-def matchString(pattern):
-    if re.search(str(pattern),"本人姓名本人名字name联系方式电话号码联系电话本人电话Phone手机号码手机电话本人电话本人号码联系号码",re.I) != None:
-        return True
-    else:
-        return False
+def matchStringName(pattern):
+    '''
+        匹配姓名函数
+    :param pattern:
+    :return:
+    '''
+    if pattern != "":
+        if re.search(str(pattern),"本人姓名本人名字name",re.I) != None:
+            return True
+        else:
+            return False
+def matchStringPhone(pattern):
+    '''
+        匹配电话函数
+    :param pattern:
+    :return:
+    '''
+    if pattern != "":
+        if re.search(str(pattern),"联系方式电话号码联系电话本人电话Phone手机号码手机电话本人号码联系号码",re.I) != None:
+            return True
+        else:
+            return False
 if __name__ == "__main__":
     printVersion()
     if loginAdmin() == True:
@@ -262,9 +321,9 @@ if __name__ == "__main__":
             # 输入文件来源
             pathFile = str(input("BigTip：请输入路径 :"))
             # 获取文件列表
-            pathList = readFile_returnPath(pathFile,pathList)
+            fileList = readFile_returnPath(pathFile,pathList)
             # 检索文件链表并且插入数据库
-            mainFunction(pathList)
+            mainFunction(fileList)
         except BaseException as falseTop:
             print(falseTop)
         while True:
