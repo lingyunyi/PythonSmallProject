@@ -324,6 +324,14 @@ def finalResult(allsum,in_allTrueResult,in_allFalseResult):
 def overallSearch(pathList):
     '''
         全盘搜索获取全部数据
+
+        在这里做一下解释，为什么 res = 0000，只要最终返回res就能获得所有盘符的数据
+            第一，我们这里引用的是外部变量，也就是说pathList 是引用外部创建好的空列表变量，然后传入到该函数中，
+            然后该函数又将外部传外部global变量，传入到第二个函数中，实际上，他们引用的都是外部参数。
+            所以，不管重复多少次，他们增删改查的都是外部的参数，只要外部参数不发生清零处理，这样不断添加子集。
+            也只会往后面添加吧了。
+            因为这两个参数都是引用外部的变量。
+            最后 RETURN res返回的是最后一次的res罢了。
     :return:
     '''
     for i in range(65, 91):
