@@ -321,6 +321,16 @@ def finalResult(allsum,in_allTrueResult,in_allFalseResult):
         print("****                                         ****")
         print("****                                         ****")
         print("*************************************************")
+def overallSearch(pathList):
+    '''
+        全盘搜索获取全部数据
+    :return:
+    '''
+    for i in range(65, 91):
+        vol = chr(i) + ':'
+        if os.path.isdir(vol):
+            res = readFile_returnPath(vol,pathList)
+    return res
 if __name__ == "__main__":
     printVersion()
     if loginAdmin() == True:
@@ -332,8 +342,11 @@ if __name__ == "__main__":
             pathList = []
             # 输入文件来源
             pathFile = str(input("BigTip：请输入路径 :"))
-            # 获取文件列表
-            fileList = readFile_returnPath(pathFile,pathList)
+            if pathFile == "all":
+                fileList = overallSearch(pathList)
+            else:
+                # 获取文件列表
+                fileList = readFile_returnPath(pathFile,pathList)
             # 检索文件链表并且插入数据库
             allTrueResult = 0
             allFalseResult = 0
