@@ -7,6 +7,7 @@ import os
 class IndexSql(object):
     def __init__(self,serverIP="localhost"):
         self.phone_pat = re.compile('^(13\d|14[5|7]|15\d|166|17[3|6|7]|18\d)\d{8}$')
+        self.name_pat = re.compile('[\\u4e00-\\u9fa5]+')
         self.serverIP = str(serverIP)
     # 定义一个连接数据库函数
     def connect(self):
@@ -26,7 +27,8 @@ class IndexSql(object):
     def insertData(self, name, phone,allPhoneList):
         if allPhoneList != False:
             if str(phone) not in allPhoneList:
-                if re.match(self.phone_pat,str(phone)) != None:
+                # 判断手机号码是手机号码，判断名字为中文的时候才能插入
+                if re.match(self.phone_pat,str(phone)) != None and re.match(self.name_pat,str(name)) != None:
                     # time.time() 是时间戳 time.localtime 可以将时间戳转换成当地时间 time.strftime 是将localtime时间格式化
                     nowTime = time.strftime('%Y-%m-%d', time.localtime(time.time()))
                     # SQL插入语句 insert into 表名（数据） values（值）
@@ -252,7 +254,7 @@ def mainFunction(fileList,allTrueResult,allFalseResult):
                         else:
                             print("BigTip：Excle表格中含有姓名和电话的列表--->可惜没有数据。")
                 except BaseException as tip:
-                    print("main-BedFalse：",tip)
+                    print("mainFunction-BedFalse：",tip)
                     continue
             else:
                 print("BigTip：文件错误。")
@@ -293,7 +295,8 @@ def matchStringName(pattern):
     :return:
     '''
     if pattern != "":
-        if re.search(str(pattern),"本人姓名本人名字name",re.I) != None:
+        # 获取的数据及匹配正则，又要求是中文
+        if re.search(str(pattern),"本人姓名本人名字",re.I) != None and re.match('[\\u4e00-\\u9fa5]+',str(pattern)) != None:
             return True
         else:
             return False
@@ -304,7 +307,7 @@ def matchStringPhone(pattern):
     :return:
     '''
     if pattern != "":
-        if re.search(str(pattern),"联系方式电话号码联系电话本人电话Phone手机号码手机电话本人号码联系号码",re.I) != None:
+        if re.search(str(pattern),"联系方式电话号码联系电话本人电话手机号码手机电话本人号码联系号码",re.I) != None:
             return True
         else:
             return False
