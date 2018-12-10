@@ -165,12 +165,12 @@ class NewsScrapy(object):
             try:
                 with open("%s.txt" % (list(one.allDict.keys())[i]), "w+") as fp:
                     htmlContent = requests.get(list(one.allDict.values())[i], headers=self.headers,timeout=0.5,verify=False).content.decode('utf-8').replace('<!--内容部分开始-->', "<begin>").replace('<!--内容部分结束-->', "<end>")
-                    contentText = re.findall(r'<begin>(.*?)<end>', htmlContent)
+                    contentText = re.findall(r'<begin>(.*?)<end>', htmlContent,re.S)
                     out_fir_contentText = str(contentText).replace(r"\r\n", "").replace('<h2 class="subject">', "").replace('&nbsp;', '').replace("<p>", '').replace('</td>', "").replace('div', "").replace(r'\t', "").replace('<td><p align="center"><song><font size="2"><br />', "")
                     out_sen_contentText = out_fir_contentText.replace('</p>', "").replace("</h2>", "").replace("<br/>",'').replace("<a href="">", "").replace('</a>', "").replace('tr', "").replace('</td>', "").replace(r'<td><p align="center"><song><font size="2"><br />', "")
                     out_thr_contentText = out_sen_contentText.replace('<p class="label">', '').replace('<  class="table_style">', '').replace('<table>', "").replace("/span", "").replace('/b',"").replace(' <p class="MsoNormal"><b><span style="font-size: 10.0pt"><b><span style="font-size: 10.0pt"', "")
                     out_for_contentText = out_thr_contentText.replace('<a href="mailto:contact@cverc.org.cn">',"").replace('<a href="mailto:avtest@cverc.org.cn">',"")
-                    fp.write(out_thr_contentText)
+                    fp.write(out_for_contentText)
                     fp.close()
             except BaseException:
                 print("Connection refused by the server..")
