@@ -5,6 +5,8 @@ class NewsScrapy(object):
     def __init__(self):
         # 全部内容的List
         self.allList = []
+        self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) Chrome/50.0.2661.102'}
+        self.allDict = {}
     def virusDynamics2017News(self):
         '''
             2017年的病毒动态新闻
@@ -59,7 +61,7 @@ class NewsScrapy(object):
         resultsList = []
         for i in HtmlcontentList:
             url = i[0].replace("..", "")
-            newsUrl = str(i[0]).replace(i[0], "http://www.cverc.org.cn/head/lesuoruanjian/%s" % (url))
+            newsUrl = str(i[0]).replace(i[0], "http://www.cverc.org.cn/head/lesuoruanjian%s" % (url))
             newsName = i[1].replace("&nbsp; ", "")
             resultsList.extend([newsName, newsUrl])
         return resultsList
@@ -78,7 +80,7 @@ class NewsScrapy(object):
         resultsList = []
         for i in HtmlcontentList:
             url = i[0].replace("..", "")
-            newsUrl = str(i[0]).replace(i[0], "http://www.cverc.org.cn/%s" % (url))
+            newsUrl = str(i[0]).replace(i[0], "http://www.cverc.org.cn%s" % (url))
             newsName = i[1].replace("&nbsp; ", "")
             resultsList.extend([newsName, newsUrl])
         return resultsList
@@ -97,7 +99,7 @@ class NewsScrapy(object):
         resultsList = []
         for i in HtmlcontentList:
             url = i[0].replace("..", "")
-            newsUrl = str(i[0]).replace(i[0], "http://www.cverc.org.cn/%s" % (url))
+            newsUrl = str(i[0]).replace(i[0], "http://www.cverc.org.cn%s" % (url))
             newsName = i[1].replace("&nbsp; ", "")
             resultsList.extend([newsName, newsUrl])
         return resultsList
@@ -117,7 +119,7 @@ class NewsScrapy(object):
             HtmlcontentList = re.findall(r'<li><a href="(.*?)">(.*?)</a>', Html)
             for i in HtmlcontentList:
                 url = i[0].replace("..", "")
-                newsUrl = str(i[0]).replace(i[0], "http://www.cverc.org.cn/head/quzhchanpin/%s" % (url))
+                newsUrl = str(i[0]).replace(i[0], "http://www.cverc.org.cn%s" % (url))
                 newsName = i[1].replace("&nbsp; ", "")
                 resultsList.extend([newsName, newsUrl])
         return resultsList
@@ -151,11 +153,29 @@ class NewsScrapy(object):
         start6 = self.forensicsProductsNews()
         self.allList.extend(start6)
         return True
+    def toDict(self):
+        self.allDict = {}
+        for i in range(0,len(self.allList),2):
+            self.allDict[self.allList[i]] = self.allList[i+1]
+        return self.allDict
+    def allDownLoad(self):
+        self.toDict()
+        for i in range(len(self.allDict)):
+            with open("%s.txt" % (list(one.allDict.keys())[i]), "w+") as fp:
+                htmlContent = requests.get(list(one.allDict.values())[i], headers=self.headers).content.decode('utf-8').replace('<!--内容部分开始-->', "<begin>").replace('<!--内容部分结束-->', "<end>")
+                contentText = re.findall(r'<begin>(.*?)<end>', htmlContent, re.S)
+                out_fir_contentText = str(contentText).replace(r"\r\n", "").replace('<h2 class="subject">', "").replace('&nbsp;', '').replace("<p>", '').replace('</td>', "").replace('div', "").replace(r'\t', "").replace('<td><p align="center"><song><font size="2"><br />', "")
+                out_sen_contentText = out_fir_contentText.replace('</p>', "").replace("</h2>", "").replace("<br/>",'').replace("<a href="">", "").replace('</a>', "").replace('tr', "").replace('</td>', "").replace(r'<td><p align="center"><song><font size="2"><br />', "")
+                out_thr_contentText = out_sen_contentText.replace('<p class="label">', '').replace('<  class="table_style">', '').replace('<table>', "").replace("/span", "").replace('/b',"").replace(' <p class="MsoNormal"><b><span style="font-size: 10.0pt"><b><span style="font-size: 10.0pt"', "")
+                out_for_contentText = out_thr_contentText.replace('<a href="mailto:contact@cverc.org.cn">',"").replace('<a href="mailto:avtest@cverc.org.cn">',"")
+                fp.write(out_thr_contentText)
+                fp.close()
+        return True
 if __name__ == "__main__":
     one = NewsScrapy()
     # 开始爬虫并且直接下载
-    one.saveText()
+    # one.saveText()
     # 只启用爬虫不下载
-    # one.mainStart()
-    # 开启爬虫并输出文件
-    # print(one.allList)
+    one.mainStart()
+    # 下载大量文件
+    one.allDownLoad()
