@@ -25,7 +25,7 @@ CREATE TABLE `bookdb` (
   `author` varchar(255) NOT NULL,
   `category` varchar(255) NOT NULL,
   `price` decimal(10,2) DEFAULT NULL,
-  `desc` varchar(255) DEFAULT NULL,
+  `descs` varchar(255) DEFAULT NULL,
   `publish_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
