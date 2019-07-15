@@ -7,7 +7,7 @@ import zipfile
 
 class statisticalCodeApi(object):
 
-    def __init__(self):
+    def __init__(self,path):
         # folder Path
         self.folderPath = None
         # logFilePath
@@ -17,7 +17,31 @@ class statisticalCodeApi(object):
         # code Number
         self.codeNumber = None
         # Initialization folder
+        # 解压文件的路径
+        self.decompression_file_path = path
+        # file path list
+        self.pathList = []
+        # code file all lines
+        self.code_all_lines = 0
+        # code file type
+        self.codeFileTypeList = """
+        py html
+        """
+    def mainStart(self):
+        '''
+        启动函数
+        :return:
+        '''
+        # 首先自动创建所属文件夹
         self.createFolder()
+        # 解压传入的文件到指定目录
+        self.decompression(filePath=self.decompression_file_path)
+        # 销毁掉源解压文件
+        self.destroying()
+        # 取出指定目录下的所有代码文件，传入的开始查询参数是指定的文件
+        self.file_path_list(self.folderPath)
+        # 最终获取所有代码数量
+        self.code_lines_Number()
     def createFolder(self):
         '''
             Create folders in specified directories format(time + random string)
@@ -56,6 +80,7 @@ class statisticalCodeApi(object):
         except BaseException as error:
             # write log
             self.logCenter("createFolder", "fail", "%s" %(str(error)))
+
     def logCenter(self,function,flag="success",content=None):
         '''
             log Center Handle
@@ -109,8 +134,7 @@ class statisticalCodeApi(object):
                     self.logCenter("decompression", "success", "moving file ok")
         except BaseException as error:
             self.logCenter("decompression", "fail", "%s" % (str(error)))
-        finally:
-            self.destroying()
+
     def destroying(self):
         '''
             Destroying documents
@@ -119,10 +143,54 @@ class statisticalCodeApi(object):
         try:
             if self.filePath != None and os.path.isfile(self.filePath):
                 # Destroying documents
-                os.remove(self.filePath)
+                # os.remove(self.filePath)
                 self.logCenter("Destroying", "success", "Destroying file yes")
         except BaseException as error:
             self.logCenter("Destroying", "fail", "%s" % (str(error)))
+
+    def file_path_list(self,folderPath):
+        '''
+            获取指定文件下面的所有代码文件
+        :return:
+        '''
+        try:
+            allFiles = os.listdir(folderPath)
+            # 遍历所有文件
+            for i in range(len(allFiles)):
+                # 获得所有文件的单个文件，并且合并路径
+                path = os.path.join(folderPath, allFiles[i])
+                path = path.replace('\u202a', "").replace("\\", "//")
+                # 如果是文件
+                if os.path.isfile(path):
+                    if path.split(".")[-1] in self.codeFileTypeList:
+                        # 加入文件列表
+                        self.pathList.append(path)
+                        continue  # 跳出此次循环
+                # 如果是目录
+                if os.path.isdir(path):
+                    # 再次遍历传入的文件夹
+                    self.file_path_list(path)
+            self.logCenter("file_path_list", "success", "Get file path yes")
+        except BaseException as error:
+            self.logCenter("file_path_list", "fail", "%s" % (str(error)))
+
+    def code_lines_Number(self):
+        '''
+         get code line
+        :return:
+        '''
+        try:
+            for fileName in self.pathList:
+                f = open(fileName,"r",encoding="utf-8")
+                for index, line in enumerate(f):
+                    self.code_all_lines += 1
+                f.close()
+            self.logCenter("code_lines_Number", "success", "%s" % (self.code_all_lines))
+        except BaseException as error:
+            self.logCenter("code_lines_Number", "fail", "%s" % (str(error)))
+
+
+
 
 
 
@@ -141,5 +209,5 @@ class statisticalCodeApi(object):
 
 
 if __name__ == "__main__":
-    a = statisticalCodeApi()
-    a.decompression(r"‪C:\Users\Administrator\Desktop\StatisticalCodeAPI.zip")
+    a = statisticalCodeApi(r"F:\PythonItems\StatisticalCodeAPI.zip")
+    a.mainStart()
