@@ -5,6 +5,6 @@ import socket
 import re
 
 
-a = "F:\PythonItems\StatisticalCodeAPI\fileUpload\20190715182336rfcjg"
-str(a[0]).lower()
-print(a)
+a = "C://Users//Administrator//Desktop//StatisticalCodeAPI.zip"
+print(os.path.isfile(a))
+print(os.path.exists(a))

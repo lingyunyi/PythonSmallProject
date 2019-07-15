@@ -22,8 +22,6 @@ class tool(object):
         #     filePath = filePath.split(":")[0] + ":" + filePath.split(":")[-1]
         # if ":" in folderPath:
         #     folderPath = folderPath.split(":")[0] + ":" + folderPath.split(":")[-1]
-        filePath = filePath.replace('\u202a',"")
-        folderPath = folderPath.replace('\u202a',"")
         z = zipfile.ZipFile(filePath, 'r')
         z.extractall(folderPath)
         z.close()

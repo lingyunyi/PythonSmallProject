@@ -83,21 +83,24 @@ class statisticalCodeApi(object):
             Traverse through all files in the specified directory
         :return:
         '''
+        self.filePath = None
         # if file move foler else if zip or tar decompression to foler
         try:
             if os.path.splitext(filePath)[1] == ".tar" or os.path.splitext(filePath)[1] == ".zip":
+                # 在这里不得不用中文讲解一下，不知道是BUG的问题，还是系统问题。
+                # 有个隐藏的字符串得去除，不然BUG问题贼多。
+                filePath = filePath.replace('\u202a', "").replace("\\", "//")
+                self.folderPath = self.folderPath.replace('\u202a', "").replace("\\", "//")
                 if os.path.splitext(filePath)[1] == ".tar":
                     # It's still a string in the past life before it's passed as data,
                     # so string replacement is done here.
-                    filePath = filePath.replace("\\", "//")
-                    self.folderPath = self.folderPath.replace("\\", "//")
                     self.tool.tar(filePath,self.folderPath)
+                    self.filePath = filePath
                 if os.path.splitext(filePath)[1] == ".zip":
                     # It's still a string in the past life before it's passed as data,
                     # so string replacement is done here.
-                    filePath = filePath.replace("\\","//")
-                    self.folderPath = self.folderPath.replace("\\","//")
                     self.tool.zip(filePath,self.folderPath)
+                    self.filePath = filePath
                 self.logCenter("decompression", "success", "decompression file ok")
             else:
                 if os.path.isfile(filePath):
@@ -106,7 +109,20 @@ class statisticalCodeApi(object):
                     self.logCenter("decompression", "success", "moving file ok")
         except BaseException as error:
             self.logCenter("decompression", "fail", "%s" % (str(error)))
-
+        finally:
+            self.destroying()
+    def destroying(self):
+        '''
+            Destroying documents
+        :return:
+        '''
+        try:
+            if self.filePath != None and os.path.isfile(self.filePath):
+                # Destroying documents
+                os.remove(self.filePath)
+                self.logCenter("Destroying", "success", "Destroying file yes")
+        except BaseException as error:
+            self.logCenter("Destroying", "fail", "%s" % (str(error)))
 
 
 
