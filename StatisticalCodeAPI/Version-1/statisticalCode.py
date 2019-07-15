@@ -25,7 +25,7 @@ class statisticalCodeApi(object):
         self.code_all_lines = 0
         # code file type
         self.codeFileTypeList = """
-        py html
+        py html css js php
         """
     def mainStart(self):
         '''
@@ -165,12 +165,12 @@ class statisticalCodeApi(object):
                     if path.split(".")[-1] in self.codeFileTypeList:
                         # 加入文件列表
                         self.pathList.append(path)
+                        self.logCenter("file_path_list", "success", "%s" %(os.path.basename(path)))
                         continue  # 跳出此次循环
                 # 如果是目录
                 if os.path.isdir(path):
                     # 再次遍历传入的文件夹
                     self.file_path_list(path)
-            self.logCenter("file_path_list", "success", "Get file path yes")
         except BaseException as error:
             self.logCenter("file_path_list", "fail", "%s" % (str(error)))
 
@@ -189,25 +189,9 @@ class statisticalCodeApi(object):
         except BaseException as error:
             self.logCenter("code_lines_Number", "fail", "%s" % (str(error)))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 if __name__ == "__main__":
-    a = statisticalCodeApi(r"F:\PythonItems\StatisticalCodeAPI.zip")
-    a.mainStart()
+    path = str(input("BigTip：请输入路径 :"))
+    getCodeNumber = statisticalCodeApi(path)
+    getCodeNumber.mainStart()
+    print("您共写的代码行数为:%s" %getCodeNumber.code_all_lines)
+
