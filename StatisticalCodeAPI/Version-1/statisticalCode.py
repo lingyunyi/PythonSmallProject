@@ -7,7 +7,7 @@ import zipfile
 
 class statisticalCodeApi(object):
 
-    def __init__(self,path):
+    def __init__(self):
         # folder Path
         self.folderPath = None
         # logFilePath
@@ -18,7 +18,7 @@ class statisticalCodeApi(object):
         self.codeNumber = None
         # Initialization folder
         # 解压文件的路径
-        self.decompression_file_path = path
+        self.decompression_file_path = None
         # file path list
         self.pathList = []
         # code file all lines
@@ -27,11 +27,14 @@ class statisticalCodeApi(object):
         self.codeFileTypeList = """
         py html css js php
         """
-    def mainStart(self):
+
+    def mainStart(self,path):
         '''
         启动函数
         :return:
         '''
+        # 解压文件的路径开始赋值
+        self.decompression_file_path = path
         # 首先自动创建所属文件夹
         self.createFolder()
         # 解压传入的文件到指定目录
@@ -42,6 +45,7 @@ class statisticalCodeApi(object):
         self.file_path_list(self.folderPath)
         # 最终获取所有代码数量
         self.code_lines_Number()
+        return self.code_all_lines
     def createFolder(self):
         '''
             Create folders in specified directories format(time + random string)
@@ -111,7 +115,7 @@ class statisticalCodeApi(object):
         self.filePath = None
         # if file move foler else if zip or tar decompression to foler
         try:
-            if os.path.splitext(filePath)[1] == ".tar" or os.path.splitext(filePath)[1] == ".zip":
+            if os.path.splitext(filePath)[1] in ".tar.zip":
                 # 在这里不得不用中文讲解一下，不知道是BUG的问题，还是系统问题。
                 # 有个隐藏的字符串得去除，不然BUG问题贼多。
                 filePath = filePath.replace('\u202a', "").replace("\\", "//")
@@ -143,7 +147,7 @@ class statisticalCodeApi(object):
         try:
             if self.filePath != None and os.path.isfile(self.filePath):
                 # Destroying documents
-                # os.remove(self.filePath)
+                os.remove(self.filePath)
                 self.logCenter("Destroying", "success", "Destroying file yes")
         except BaseException as error:
             self.logCenter("Destroying", "fail", "%s" % (str(error)))
@@ -191,7 +195,6 @@ class statisticalCodeApi(object):
 
 if __name__ == "__main__":
     path = str(input("BigTip：请输入路径 :"))
-    getCodeNumber = statisticalCodeApi(path)
-    getCodeNumber.mainStart()
-    print("您共写的代码行数为:%s" %getCodeNumber.code_all_lines)
+    getCodeNumber = statisticalCodeApi()
+    print("您写得代码数量共为:%s"%(getCodeNumber.mainStart(path)))
 
