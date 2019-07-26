@@ -161,7 +161,7 @@ class statisticalCodeApi(object):
         try:
             if self.filePath != None and os.path.isfile(self.filePath):
                 # Destroying documents
-                # os.remove(self.filePath)
+                os.remove(self.filePath)
                 self.logCenter("Destroying", "success", "Destroying file yes")
         except BaseException as error:
             self.logCenter("Destroying", "fail", "%s" % (str(error)))
