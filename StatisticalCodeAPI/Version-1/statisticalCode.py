@@ -24,10 +24,12 @@ class statisticalCodeApi(object):
         # code file all lines
         self.code_all_lines = 0
         # code file type
-        self.codeFileTypeList = """
-        py html css js php
-        """
-
+        self.codeFileTypeList = [
+            "html","css","js","py"
+        ]
+        self.ignorefile = [
+            "txt",
+        ]
     def mainStart(self,path):
         '''
         启动函数
@@ -45,6 +47,9 @@ class statisticalCodeApi(object):
         self.file_path_list(self.folderPath)
         # 最终获取所有代码数量
         self.code_lines_Number()
+        # 删除所有空文件
+        self.rmdir(path=self.folderPath)
+
         return self.code_all_lines
     def createFolder(self):
         '''
@@ -171,6 +176,10 @@ class statisticalCodeApi(object):
                         self.pathList.append(path)
                         self.logCenter("file_path_list", "success", "%s" %(os.path.basename(path)))
                         continue  # 跳出此次循环
+                    else:
+                        if path.split(".")[-1] not in self.ignorefile:
+                            # 如果不是代码文件也不是忽视文件
+                            os.remove(path)
                 # 如果是目录
                 if os.path.isdir(path):
                     # 再次遍历传入的文件夹
@@ -192,6 +201,20 @@ class statisticalCodeApi(object):
             self.logCenter("code_lines_Number", "success", "%s" % (self.code_all_lines))
         except BaseException as error:
             self.logCenter("code_lines_Number", "fail", "%s" % (str(error)))
+
+    def rmdir(self,path):
+        # 删除空文件夹
+        try:
+            for s_child in os.listdir(path):
+                s_child_path = os.path.join(path,s_child)
+                if os.path.isdir(s_child_path):
+                    if not os.listdir(s_child_path):
+                        os.rmdir(s_child_path)
+                        self.logCenter("rmdir", "success", "%s" % (s_child_path))
+                        continue
+                    self.rmdir(s_child_path)
+        except BaseException as error:
+            self.logCenter("rmdir", "fail", "%s" % (str(error)))
 
 if __name__ == "__main__":
     path = str(input("BigTip：请输入路径 :"))
