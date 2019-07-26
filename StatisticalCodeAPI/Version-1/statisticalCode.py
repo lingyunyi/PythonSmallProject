@@ -30,11 +30,17 @@ class statisticalCodeApi(object):
         self.ignorefile = [
             "txt",
         ]
+        self.decompression_E = [
+            'zip','tar'
+        ]
+        self.emptydir = []
     def mainStart(self,path):
         '''
         启动函数
         :return:
         '''
+        if path.split('.')[-1] not in self.decompression_E:
+            exit('暂为支持该扩展文件......')
         # 解压文件的路径开始赋值
         self.decompression_file_path = path
         # 首先自动创建所属文件夹
@@ -49,7 +55,10 @@ class statisticalCodeApi(object):
         self.code_lines_Number()
         # 删除所有空文件
         self.rmdir(path=self.folderPath)
-
+        # 删除所有空文件
+        self.rmdirs()
+        # 最后记录一次代码数量
+        self.logCenter("code_lines_Number", "success", "%s" % (self.code_all_lines))
         return self.code_all_lines
     def createFolder(self):
         '''
@@ -152,7 +161,7 @@ class statisticalCodeApi(object):
         try:
             if self.filePath != None and os.path.isfile(self.filePath):
                 # Destroying documents
-                os.remove(self.filePath)
+                # os.remove(self.filePath)
                 self.logCenter("Destroying", "success", "Destroying file yes")
         except BaseException as error:
             self.logCenter("Destroying", "fail", "%s" % (str(error)))
@@ -192,16 +201,16 @@ class statisticalCodeApi(object):
          get code line
         :return:
         '''
-        try:
-            for fileName in self.pathList:
+        for fileName in self.pathList:
+            try:
                 f = open(fileName,"r",encoding="utf-8")
                 for index, line in enumerate(f):
                     self.code_all_lines += 1
                 f.close()
-            self.logCenter("code_lines_Number", "success", "%s" % (self.code_all_lines))
-        except BaseException as error:
-            self.logCenter("code_lines_Number", "fail", "%s" % (str(error)))
-
+            except BaseException as error:
+                self.logCenter("code_lines_Number", "fail", "%s" % (str(error)))
+                continue
+        self.logCenter("code_lines_Number", "success", "%s" % (self.code_all_lines))
     def rmdir(self,path):
         # 删除空文件夹
         try:
@@ -210,11 +219,21 @@ class statisticalCodeApi(object):
                 if os.path.isdir(s_child_path):
                     if not os.listdir(s_child_path):
                         os.rmdir(s_child_path)
-                        self.logCenter("rmdir", "success", "%s" % (s_child_path))
+                        self.logCenter("rmdir", "success", "%s" % (os.path.basename(s_child_path)))
                         continue
+                    else:
+                        self.emptydir.append(s_child_path)
                     self.rmdir(s_child_path)
         except BaseException as error:
             self.logCenter("rmdir", "fail", "%s" % (str(error)))
+
+    def rmdirs(self):
+        for dir in self.emptydir:
+            try:
+                os.removedirs(dir)
+                self.logCenter("rmdirs", "success", "%s" % (os.path.basename(dir)))
+            except BaseException as error:
+                continue
 
 if __name__ == "__main__":
     path = str(input("BigTip：请输入路径 :"))

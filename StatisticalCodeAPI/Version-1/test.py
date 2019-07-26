@@ -4,33 +4,23 @@ import random
 import socket
 import re
 
+listx= []
+def rmdir(path,listx):
+    # 删除空文件夹
+    try:
+        while len(listx):
+            for s_child in os.listdir(path):
+                s_child_path = os.path.join(path, s_child)
+                if os.path.isdir(s_child_path):
+                    if not os.listdir(s_child_path):
+                        listx.append(s_child_path)
+                        continue
+                    rmdir(s_child_path)
+            for delete_file in range(len(listx)):
+                os.rmdir(delete_file)
+                listx.remove(delete_file)
 
-def readFile_returnPath(pathFile,pathList):
-    '''
-        获取传入目录下的所有文件以及目录
-    :param pathFile:
-    :param pathList:
-    :return:
-    '''
-    # 获取目录文件下的所有文件
-    allFiles = os.listdir(pathFile)
-    # 遍历所有文件
-    for i in range(len(allFiles)):
-        try:
-            # 获得所有文件的单个文件，并且合并路径
-            path = os.path.join(pathFile,allFiles[i])
-            # 如果是文件
-            if os.path.isfile(path):
-                # 判断是否是Excel文件
-                if path.split(".")[-1] == "xls" or path.split(".")[-1] == "xlsx":
-                    # 加入文件列表
-                    pathList.append(path)
-                    continue # 跳出此次循环
-            # 如果是目录
-            if os.path.isdir(path):
-                # 再次遍历传入的文件夹
-                readFile_returnPath(path,pathList)
-        except BaseException as tip:
-            print("read-function-BedFalse：",tip)
-            continue
-    return pathList
+    except BaseException as error:
+        print(error)
+
+rmdir(r'F:\PythonItems\StatisticalCodeAPI\fileUpload\20190726165956tzpqv',listx)

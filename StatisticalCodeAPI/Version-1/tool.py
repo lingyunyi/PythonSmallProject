@@ -1,6 +1,7 @@
 import socket
 import zipfile,tarfile
 import re
+
 class tool(object):
 
     def get_host_ip(self):
@@ -32,8 +33,9 @@ class tool(object):
         #     filePath = filePath.split(":")[0] + ":" + filePath.split(":")[-1]
         # if ":" in folderPath:
         #     folderPath = folderPath.split(":")[0] + ":" + folderPath.split(":")[-1]
-        filePath = filePath.replace('\u202a', "")
-        folderPath = folderPath.replace('\u202a', "")
+        # filePath = (filePath.replace('\u202a', ""))
+        # folderPath = folderPath.replace('\u202a', "")
         t = tarfile.open(filePath, 'r')
         t.extractall(folderPath)  # 可设置解压地址
         t.close()
+
