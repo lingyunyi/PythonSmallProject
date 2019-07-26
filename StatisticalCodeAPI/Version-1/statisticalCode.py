@@ -25,7 +25,7 @@ class statisticalCodeApi(object):
         self.code_all_lines = 0
         # code file type
         self.codeFileTypeList = [
-            "html","css","js","py"
+            "html","css","js","py","php"
         ]
         self.ignorefile = [
             "txt",
