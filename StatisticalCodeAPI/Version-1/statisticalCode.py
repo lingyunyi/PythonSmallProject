@@ -1,7 +1,7 @@
 import os,shutil
 import datetime
 import random
-import tool
+import tool,time
 
 import zipfile
 
@@ -39,7 +39,8 @@ class statisticalCodeApi(object):
         启动函数
         :return:
         '''
-        if path.split('.')[-1] not in self.decompression_E:
+        if path.split('.')[-1] not in self.decompression_E and path.split('.')[-1] not in self.codeFileTypeList:
+            print(path.split('.')[-1] not in self.codeFileTypeList)
             exit('暂为支持该扩展文件......')
         # 解压文件的路径开始赋值
         self.decompression_file_path = path
@@ -235,8 +236,31 @@ class statisticalCodeApi(object):
             except BaseException as error:
                 continue
 
+    def printVersion(self):
+        '''
+            版本界面
+        :return:
+        '''
+        print("\n")
+        print("*************************************************")
+        print("****                                         ****")
+        print("****                                         ****")
+        print("****           欢迎使用代码统计器            ****")
+        print("****                                         ****")
+        print("****              版本：V2.0                 ****")
+        print("****                                         ****")
+        print("****              作者：匿名                 ****")
+        print("****                                         ****")
+        print("****                                         ****")
+        print("*************************************************")
+        time.sleep(1)
+        print("\n")
+
 if __name__ == "__main__":
-    path = str(input("BigTip：请输入路径 :"))
+
     getCodeNumber = statisticalCodeApi()
-    print("您写得代码数量共为:%s"%(getCodeNumber.mainStart(path)))
+    getCodeNumber.printVersion()
+    while True:
+        path = str(input("BigTip：请输入路径 :"))
+        print("您写得代码数量共为:%s"%(getCodeNumber.mainStart(path)))
 
