@@ -1,4 +1,4 @@
-from flask import Flask
+﻿from flask import Flask
 from flask import render_template
 import setting,WebShell,time,random,Sqlmanager
 
@@ -30,6 +30,9 @@ def lingyunyi(flag):
             Sqlmanager.SqlManger().search_table_all_data()
             # 将内存字典的数据转换并吸收数据
             WebShell.webShell()
+
+            print(setting.Golbals_WebUrl_Dict)
+
             # 到这里内存字典就已经有数据了
             # 我们将内存字典的数据，深拷贝到，临时内存字典中，防止第二次刷新数据时，网页出错
             setting.GolbalsData2TemplateData()

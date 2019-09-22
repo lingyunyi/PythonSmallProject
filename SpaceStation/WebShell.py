@@ -16,18 +16,24 @@ class webShell(object):
             return
         #   开始逐个处理内存列表中的URL连接
         for i in setting.Golbals_SQL_Table_Data_List:
-            self.Get_Web_Status_AND_Web_PING(i[1])
+            try:
+                self.Get_Web_Status(i[1])
+                self.Web_PING(i[1])
+            except BaseException as error:
+                requests.Response.close()
+                print(error)
+                continue
         return
 
-    def Get_Web_Status_AND_Web_PING(self, webURL):
+    def Get_Web_Status(self, webURL):
         try:
-            # 构造requests命令
-            headers = {
-                'User-Agent': '"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'
+            header = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
             }
-            r = requests.get("http://%s" % (webURL), headers=headers)
+            r = requests.head(webURL, headers=header, verify=False, allow_redirects=True, timeout=5)
             setting.Golbals_WebUrl_Dict.setdefault(webURL, {"status_code": r.status_code, "ping_value": None})
             r.close()
+
             # # 构造Curl命令
             # command = "curl -I %s 2>/dev/null|awk 'NR==1{print $2}'" %(webURL)
             # p = subprocess.Popen([command],
@@ -41,8 +47,13 @@ class webShell(object):
             #     out = None
             # Golbals_WebUrl_Dic.setdefault(webURL, {"status_code": out, "ping_value": None})
 
+        except BaseException as error:
+            print(error)
+
+    def Web_PING(self,webURL):
+        try:
             # 构造ping命令
-            command = "ping -c 1 %s" % (webURL)
+            command = "ping -c 2 %s" % (webURL)
 
             p = subprocess.Popen([command],
                                  stdin=subprocess.PIPE,
@@ -55,12 +66,15 @@ class webShell(object):
             regex = r'time=(.+?)ms'
             ping_results = str(re.findall(regex, out)[0])
             ping_results = ping_results.replace(" ", '')
+
+            print("----------------")
+            print(ping_results)
+
             if len(ping_results) <= 0:
                 ping_results = None
             setting.Golbals_WebUrl_Dict[webURL]["ping_value"] = ping_results
         except BaseException as error:
             print(error)
-
 
 if __name__ == '__main__':
     pass
