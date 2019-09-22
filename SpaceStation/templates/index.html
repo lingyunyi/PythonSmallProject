@@ -53,15 +53,15 @@
                     {% if i[1] in DataDict.keys() %}
                         <tr>
                             <th>{{ i[0] }}</th>
-                            <td><a href="http://{{ i[1] }}" target="_blank">{{ i[1] }}</a></td>
+                            <td><a href="{{ i[1] }}" target="_blank">{{ i[1] }}</a></td>
                             <td>{{ i[3] }}</td>
                             {% if (DataDict[i[1]])["status_code"] != None %}
                                 <td>{{ (DataDict[i[1]])["status_code"] }}</td>
                             {% else %}
                                 <td>Wait...</td>
                             {% endif %}
-                            {% if (DataDict[i[1]])["status_code"] != None %}
-                                <td>{{ (DataDict[i[1]])["ping_value"] }}</td>
+                            {% if (DataDict[i[1]])["ping_value"] != None %}
+                                <td>{{ (DataDict[i[1]])["ping_value"] }}ms</td>
                             {% else %}
                                 <td>Wait...</td>
                             {% endif %}
