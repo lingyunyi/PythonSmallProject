@@ -1,9 +1,10 @@
 import pymysql
-import setting
 import datetime
 
 class SqlManger(object):
 
+    def __init__(self,setting):
+        self.setting = setting
     def connect(self):
         '''
             # connent(参数列表[“IP地址”，“数据库账号”， “数据库密码”， “数据库名称”])
@@ -41,7 +42,7 @@ class SqlManger(object):
                     row[4] = str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
                     # 遍历每一行中的下标为x的值
                     # 这里只是将数据添加入内存列表中，并没有刷新内存列表
-                    setting.Golbals_SQL_Table_Data_List.append(row)
+                    self.setting.Golbals_SQL_Table_Data_List.append(row)
             self.close()
         except:
             # 如果发生错误则回滚

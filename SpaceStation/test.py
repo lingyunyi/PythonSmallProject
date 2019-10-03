@@ -1,4 +1,4 @@
-import requests,time
+import requests,time,re
 
 
 def Get_Web_Status_AND_Web_PING(webURL):
@@ -9,13 +9,9 @@ def Get_Web_Status_AND_Web_PING(webURL):
             }
             r = requests.head(webURL, headers=header, verify=False, allow_redirects=True, timeout=5)
             time.sleep(10)
-            print(r.status_code)
-            print("------------")
             print(r.history)
-            print("------------")
-            print(r.headers)
-            print("------------")
-            print(r.raise_for_status())
+            print(r.history == False)
+            print(str(re.findall("\d+",str(r.history[0]))[0]))
             print("------------")
             r.close()
         except BaseException as e:
@@ -26,4 +22,6 @@ p1 = "http://www.nicemoe2.com"
 p2 = "http://www.acgnt.org"
 p3 = "http://www.baidu.com"
 
-Get_Web_Status_AND_Web_PING(p2)
+Get_Web_Status_AND_Web_PING(p3)
+
+

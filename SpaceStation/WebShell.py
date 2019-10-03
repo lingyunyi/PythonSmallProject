@@ -2,7 +2,6 @@
 import re
 import subprocess
 import threading
-import setting
 
 class webShell(object):
     '''
@@ -11,27 +10,33 @@ class webShell(object):
 
         该类的功能是将内存列表中的所有url连接，进行状态码和FPS值的测试，并将更新到内存字典中
     '''
-    def __init__(self):
-        if len(setting.Golbals_SQL_Table_Data_List) < 0:
+    def __init__(self,setting):
+        self.setting = setting
+        if len(self.setting.Golbals_SQL_Table_Data_List) < 0:
             return
         #   开始逐个处理内存列表中的URL连接
-        for i in setting.Golbals_SQL_Table_Data_List:
+        for i in self.setting.Golbals_SQL_Table_Data_List:
+            url = str(i[1])
+            self.setting.Golbals_WebUrl_Dict.setdefault(url, {"status_code": "wating...","ping_results": "wating..."})
             try:
-                self.Get_Web_Status(i[1])
-                self.Web_PING(i[1])
+                self.Get_Web_Status(url)
+                self.Web_PING(url)
             except BaseException as error:
-                requests.Response.close()
                 print(error)
                 continue
         return
 
     def Get_Web_Status(self, webURL):
+        print("Get_Web_Status  开始处理  ------------------\n",webURL)
         try:
             header = {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
             }
             r = requests.head(webURL, headers=header, verify=False, allow_redirects=True, timeout=5)
-            setting.Golbals_WebUrl_Dict.setdefault(webURL, {"status_code": r.status_code, "ping_value": None})
+            if r.history != []:
+                self.setting.Golbals_WebUrl_Dict[webURL]["status_code"] = str(re.findall("\d+",str(r.history[0]))[0])
+            else:
+                self.setting.Golbals_WebUrl_Dict[webURL]["status_code"] = r.status_code
             r.close()
 
             # # 构造Curl命令
@@ -48,12 +53,17 @@ class webShell(object):
             # Golbals_WebUrl_Dic.setdefault(webURL, {"status_code": out, "ping_value": None})
 
         except BaseException as error:
-            print(error)
+            print("Get_Web_Status----------\n",error)
 
     def Web_PING(self,webURL):
+        print("Web_PING  开始处理  ------------------\n", webURL)
         try:
             # 构造ping命令
-            command = "ping -c 2 %s" % (webURL)
+            # http: // www.baidu.com 带有HTTP:ping不了，解剖才行
+
+            webURL2 = webURL.split("/")[-1]
+
+            command = "ping -c 2 %s" % (webURL2)
 
             p = subprocess.Popen([command],
                                  stdin=subprocess.PIPE,
@@ -62,19 +72,14 @@ class webShell(object):
 
             out = p.stdout.read().decode('utf-8')
 
+
             # 提取返回值
             regex = r'time=(.+?)ms'
             ping_results = str(re.findall(regex, out)[0])
             ping_results = ping_results.replace(" ", '')
-
-            print("----------------")
-            print(ping_results)
-
-            if len(ping_results) <= 0:
-                ping_results = None
-            setting.Golbals_WebUrl_Dict[webURL]["ping_value"] = ping_results
+            self.setting.Golbals_WebUrl_Dict[webURL]["ping_results"] = ping_results
         except BaseException as error:
-            print(error)
+            print("Web_PING222----------error:\n",error)
 
 if __name__ == '__main__':
     pass

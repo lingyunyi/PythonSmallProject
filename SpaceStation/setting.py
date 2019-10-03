@@ -1,29 +1,28 @@
-import copy
+import copy,time
 
 
-Golbals_WebUrl_Dict = {}
+class Setting(object):
 
-Golbals_SQL_Table_Data_List = []
+    def __init__(self):
+        self.Golbals_WebUrl_Dict = {}
+        self.Golbals_SQL_Table_Data_List = []
+        self.Tem_Golbals_WebUrl_Dict = {}
+        self.Tem_Golbals_SQL_Table_Data_List = []
 
-Tem_Golbals_WebUrl_Dict = {}
+    def clearGolbalsData(self):
+        self.Golbals_WebUrl_Dict = {}
+        self.Golbals_SQL_Table_Data_List = []
 
-Tem_Golbals_SQL_Table_Data_List = []
+    def clearTemplateData(self):
+        self.Tem_Golbals_WebUrl_Dict = {}
+        self.Tem_Golbals_SQL_Table_Data_List = []
+
+    def GolbalsData2TemplateData(self):
+        self.Tem_Golbals_WebUrl_Dict = copy.deepcopy(self.Golbals_WebUrl_Dict)
+        self.Tem_Golbals_SQL_Table_Data_List = copy.deepcopy(self.Golbals_SQL_Table_Data_List)
 
 
-def clearGolbalsData():
-    global Golbals_WebUrl_Dict
-    global Golbals_SQL_Table_Data_List
-    Golbals_WebUrl_Dict = {}
-    Golbals_SQL_Table_Data_List = []
-
-def clearTemplateData():
-    global Golbals_WebUrl_Dict
-    global Golbals_SQL_Table_Data_List
-    Tem_Golbals_WebUrl_Dict = {}
-    Tem_Golbals_SQL_Table_Data_List = []
-
-def GolbalsData2TemplateData():
-    global Tem_Golbals_WebUrl_Dict
-    global Tem_Golbals_SQL_Table_Data_List
-    Tem_Golbals_WebUrl_Dict = copy.deepcopy(Golbals_WebUrl_Dict)
-    Tem_Golbals_SQL_Table_Data_List = copy.deepcopy(Golbals_SQL_Table_Data_List)
+a = Setting()
+# a.clearGolbalsData()
+# a.Tem_Golbals_WebUrl_Dict
+a.GolbalsData2TemplateData()
