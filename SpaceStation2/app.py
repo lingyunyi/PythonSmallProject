@@ -2,6 +2,7 @@
 from flask import render_template
 import mainFunction
 import pickle
+import random
 
 app = Flask(__name__)
 
@@ -10,7 +11,12 @@ app = Flask(__name__)
 def indexShow():
     fileRead = open('TemplateData.txt', 'rb')
     golbalData = pickle.load(fileRead)
-    return render_template('/index.html', DataDict=golbalData["WebShell"],DataList=golbalData["SqlManger"])
+    imgData = golbalData["BiliBili"]
+    randomKey = random.choice(list(imgData.keys()))
+    randomValue = imgData[randomKey]
+    ImgData = []
+    ImgData.append([randomKey,randomValue])
+    return render_template('/index.html', DataDict=golbalData["WebShell"],DataList=golbalData["SqlManger"],ImgData=ImgData)
 
 @app.route("/login")
 def login():
