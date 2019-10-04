@@ -35,9 +35,12 @@ class webShell(object):
             }
             r = requests.head(webURL, headers=header, verify=False, allow_redirects=True, timeout=5)
             # r.history != [] 就代表r.history有值， 但是这样并不能代表地址跳转成别的页面，我们还要验证他等于https的情况
-            webURLs = webURL.replace("http","https") + "/"
+            web_perfix = webURL.split(":")[0]
+            # 将所有数据都处理成HTTPS，看看是不是只转换了HTTPS
+            webURLs = webURL.replace(web_perfix,"https") + "/"
+            # 如果有值就代表，并且改造过后的https还不相等的话，就代表是真的重定向了。
             if r.history != [] and r.url != webURLs:
-                self.golbalData["WebShell"][webURL]["status_code"] = str(re.findall("\d+",str(r.history[0]))[0])
+                self.golbalData["WebShell"][webURL]["status_code"] = str(re.findall("\d+", str(r.history[0]))[0])
             else:
                 self.golbalData["WebShell"][webURL]["status_code"] = r.status_code
             r.close()

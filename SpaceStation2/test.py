@@ -1,33 +1,23 @@
-import requests,re
+import re
+import requests
+
+def Get_Web_Status(webURL):
+    header = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
+    }
+    r = requests.head(webURL, headers=header, verify=False, allow_redirects=True, timeout=5)
+    # r.history != [] 就代表r.history有值， 但是这样并不能代表地址跳转成别的页面，我们还要验证他等于https的情况
+    web_perfix = webURL.split(":")[0]
+    webURLs = webURL.replace(web_perfix, "https")
+    print(r.history)
+    print(r.url)
+    print(r.history != [])
+    print(r.url != webURLs)
+    if r.history != [] and r.url != webURLs:
+        print("*************************",r.status_code)
+    else:
+        print("---------------------------",r.status_code)
+    r.close()
 
 
-def Get_BiliBili_Img_Url():
-    try:
-        header = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
-        }
-        r = requests.get("https://www.bilibili.com/guochuang/", headers=header,timeout=5)
-        # 获取网页所有HTML标签
-        response = r.content.decode("utf-8")
-        # 获取包含需要结果页面的DIV标签
-        response_DIV = re.findall('<div class="carou-images">(.*?)</div>',response)
-        # 先找到所有的LI
-        response_LI = re.findall('<ul class="carou-images-wrapper clearfix">(.*?)</ui>',str(response_DIV))
-        # 获取所需要的所有A标签
-        response_A = re.findall('a href="(.*?)"',str(response_LI))
-        # 获取所有需要的DIV标签
-        response_IMG = re.findall('img src="(.*?)@',str(response_LI))
-        print(response_A)
-        print(response_IMG)
-        print(len(response_A))
-        print(len(response_IMG))
-
-
-
-
-    except BaseException as error:
-        print("Get_BiliBili_Img_Url----------\n", error)
-
-
-
-Get_BiliBili_Img_Url()
+Get_Web_Status("http://nicemoe1.com")

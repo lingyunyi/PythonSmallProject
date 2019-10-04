@@ -46,6 +46,7 @@ def IntervalProduction():
     # 子进程启动
     t.start()
 
-# IntervalProduction()
+if __name__ == "__main__":
+    IntervalProduction()
 
 
