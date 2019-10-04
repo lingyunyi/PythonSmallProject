@@ -36,11 +36,6 @@ class webShell(object):
             r = requests.head(webURL, headers=header, verify=False, allow_redirects=True, timeout=5)
             # r.history != [] 就代表r.history有值， 但是这样并不能代表地址跳转成别的页面，我们还要验证他等于https的情况
             webURLs = webURL.replace("http","https") + "/"
-            print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-            print(webURL)
-            print(webURLs)
-            print(r.url)
-            print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
             if r.history != [] and r.url != webURLs:
                 self.golbalData["WebShell"][webURL]["status_code"] = str(re.findall("\d+",str(r.history[0]))[0])
             else:

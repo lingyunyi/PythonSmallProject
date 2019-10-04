@@ -7,71 +7,75 @@
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
           crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="referrer" content="no-referrer" />
+    <meta name="referrer" content="no-referrer"/>
     <title>网页重导收录空间站</title>
 </head>
 <body>
-<nav class="navbar" style="background:url(http://jfrft.com/images/pic/banner19219.jpg) no-repeat 50% 50%;height: 160px">
+<nav class="navbar"
+     style="background:url(http://jfrft.com/images/pic/banner19219.jpg) no-repeat 50% 50%;height: 160px;margin-bottom: 0">
     <div class="container">
         <div class="navbar-header">
         </div>
     </div>
 </nav>
 
-<div class="container">
-    <div class="jumbotron" style="padding: 0">
-        <a href="{{ ImgData[0][0] }}">
-            <img src="{{ ImgData[0][1] }}" style="width: 1138px">
-        </a>
-    </div>
-
-
-    <div class="panel panel panel-success">
-        <div class="panel-heading">
-            <span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
-            大正时期，日本。心地善良的卖炭少年·炭治郎，有一天他的家人被鬼杀死了。而唯一幸存下来的妹妹——祢豆子变成了鬼。被绝望的现实打垮的炭治郎，为了寻找让妹妹变回人类的方法，决心朝着“鬼杀队”的道路前进。人与鬼交织的悲哀的兄妹的故事，现在开始！
+<div class="container-fulid"
+     style="background:url(https://nicemoe2.com/wp-content/uploads/2019/08/06c36d8e01193f4b756e1b516e4c0606.png) no-repeat;background-attachment: fixed;height: 1080px;">
+    <div class="container" style="background: rgba(255, 255, 255, 0.5);padding-top: 20px">
+        <div class="jumbotron" style="padding: 0">
+            <a href="{{ ImgData[0][0] }}" target="_blank">
+                <img src="{{ ImgData[0][1] }}" style="width: 1138px">
+            </a>
         </div>
-        <table class="table ">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>网站地址</th>
-                <th>网站标题</th>
-                <th>网站状态</th>
-                <th>PING值</th>
-                <th>最新时间</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% if DataDict != {} %}
-                {% for i in DataList %}
-                    {% if i[1] in DataDict.keys() %}
-                        <tr>
-                            <th>{{ i[0] }}</th>
-                            <td><a href="{{ i[1] }}" target="_blank" style="text-decoration:none;">{{ i[1] }}</a></td>
-                            <td>{{ i[3] }}</td>
-                            {% if (DataDict[i[1]])["status_code"] != "wating..." %}
-                                <td>{{ (DataDict[i[1]])["status_code"] }}</td>
-                            {% else %}
-                                <td>Wait...</td>
-                            {% endif %}
-                            {% if (DataDict[i[1]])["ping_results"] != "wating..." %}
-                                <td>{{ (DataDict[i[1]])["ping_results"] }}ms</td>
-                            {% else %}
-                                <td>Wait...</td>
-                            {% endif %}
-                            <td><a style="text-decoration:none;">{{ i[4] }}</a></td>
-                        </tr>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-            </tbody>
-        </table>
+
+
+        <div class="panel panel panel-success">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
+                大正时期，日本。心地善良的卖炭少年·炭治郎，有一天他的家人被鬼杀死了。而唯一幸存下来的妹妹——祢豆子变成了鬼。被绝望的现实打垮的炭治郎，为了寻找让妹妹变回人类的方法，决心朝着“鬼杀队”的道路前进。人与鬼交织的悲哀的兄妹的故事，现在开始！
+            </div>
+            <table class="table ">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>网站地址</th>
+                    <th>网站标题</th>
+                    <th>网站状态</th>
+                    <th>PING值</th>
+                    <th>最新时间</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if DataDict != {} %}
+                    {% for i in DataList %}
+                        {% if i[1] in DataDict.keys() %}
+                            <tr>
+                                <th>{{ i[0] }}</th>
+                                <td><a href="{{ i[1] }}" target="_blank" style="text-decoration:none;">{{ i[1] }}</a>
+                                </td>
+                                <td>{{ i[3] }}</td>
+                                {% if (DataDict[i[1]])["status_code"] != "wating..." %}
+                                    <td>{{ (DataDict[i[1]])["status_code"] }}</td>
+                                {% else %}
+                                    <td>Wait...</td>
+                                {% endif %}
+                                {% if (DataDict[i[1]])["ping_results"] != "wating..." %}
+                                    <td>{{ (DataDict[i[1]])["ping_results"] }}ms</td>
+                                {% else %}
+                                    <td>Wait...</td>
+                                {% endif %}
+                                <td><a style="text-decoration:none;">{{ i[4] }}</a></td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+
     </div>
-
 </div>
-
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
