@@ -6,7 +6,7 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
           crossorigin="anonymous">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="referrer" content="no-referrer"/>
     <title>网页重导收录空间站</title>
 </head>
@@ -21,10 +21,12 @@
 
 <div class="container-fulid"
      style="background:url(../static/img/background.png) no-repeat;background-attachment: fixed;">
+
     <div class="container" style="background: rgba(255, 255, 255, 0.5);padding-top: 20px">
-        <div class="jumbotron" style="padding: 0">
+
+        <div class="jumbotron" style="padding: 0;overflow: hidden;">
             <a href="{{ ImgData[0][0] }}" target="_blank">
-                <img src="{{ ImgData[0][1] }}" style="width: 1138px">
+                <img src="{{ ImgData[0][1] }}">
             </a>
         </div>
 
