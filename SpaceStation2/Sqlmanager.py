@@ -39,7 +39,6 @@ class SqlManger(object):
             for row in results:
                 if row[-1] != 1:
                     row = list(row)
-                    row[1] = str("http://{}".format(row[1]))
                     row[4] = str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
                     # 遍历每一行中的下标为x的值
                     # 这里只是将数据添加入内存列表中，并没有刷新内存列表
