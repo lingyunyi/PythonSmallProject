@@ -2,6 +2,7 @@
 import re
 import subprocess
 import threading
+import random
 
 class webShell(object):
     '''
@@ -30,10 +31,7 @@ class webShell(object):
     def Get_Web_Status(self, webURL):
         print("Get_Web_Status  开始处理  ------------------\n",webURL)
         try:
-            header = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
-            }
-            r = requests.head(webURL, headers=header, verify=False, allow_redirects=True, timeout=5)
+            r = requests.head(webURL, headers=self.get_request_headers(), verify=False, allow_redirects=True, timeout=5)
             # r.history != [] 就代表r.history有值， 但是这样并不能代表地址跳转成别的页面，我们还要验证他等于https的情况
             web_perfix = webURL.split(":")[0]
             # 将所有数据都处理成HTTPS，看看是不是只转换了HTTPS
@@ -89,10 +87,7 @@ class webShell(object):
 
     def Get_BiliBili_Img_Url(self,golbalData):
         try:
-            header = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
-            }
-            r = requests.get("https://www.bilibili.com/anime/", headers=header, timeout=5)
+            r = requests.get("https://www.bilibili.com/anime/", headers=self.get_request_headers(), timeout=5)
             # 获取网页所有HTML标签
             response = r.content.decode("utf-8")
             # 获取包含需要结果页面的DIV标签
@@ -105,3 +100,15 @@ class webShell(object):
                 golbalData["BiliBili"][response_A[i]] = response_IMG[i]
         except BaseException as error:
             print("Get_BiliBili_Img_Url----------\n", error)
+
+    def get_request_headers(self):
+        # 用户代理User-Agent列表
+        USER_AGENTS = [
+            "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0"
+        ]
+
+        headers = {
+            "User-Agent": random.choice(USER_AGENTS),
+        }
+        return headers
