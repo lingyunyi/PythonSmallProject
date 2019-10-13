@@ -101,6 +101,24 @@ class webShell(object):
         except BaseException as error:
             print("Get_BiliBili_Img_Url----------\n", error)
 
+    def Get_BiliBili_Img_Url_guochan(self,golbalData):
+        try:
+            r = requests.get("https://www.bilibili.com/guochuang", headers=self.get_request_headers(), timeout=5)
+            # 获取网页所有HTML标签
+            response = r.content.decode("utf-8")
+            # 获取包含需要结果页面的DIV标签
+            # 获取包含需要结果页面的DIV标签
+            response_DIV = re.findall('<li class="chief-recom-item">(.*?)</li>', response)
+            # 获取所需要的所有A标签
+            response_A = re.findall('a href="(.*?)"', str(response_DIV))
+            # 获取所有需要的DIV标签
+            response_IMG = re.findall('img src="(.*?)@', str(response_DIV))
+            for i in range(len(response_A)):
+                if i < 6:
+                    golbalData["BiliBili"][response_A[i]] = response_IMG[i]
+        except BaseException as error:
+            print("Get_BiliBili_Img_Url_guochan----------\n", error)
+
     def get_request_headers(self):
         # 用户代理User-Agent列表
         USER_AGENTS = [

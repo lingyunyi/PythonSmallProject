@@ -26,6 +26,7 @@ def DataMaker():
         # 获取BILIBILI的IMG数据，用来设计HTML
         golbalData["BiliBili"] = {}
         Web_Shell.Get_BiliBili_Img_Url(golbalData)
+        Web_Shell.Get_BiliBili_Img_Url_guochan(golbalData)
         # 到这里，又获得了经过WebShell处理的数据，这样数据就收集齐了。接下来就是序列化之后，导入文件中。
         fileOpen = open('TemplateData.txt', 'wb')
         pickle.dump(golbalData, fileOpen)
