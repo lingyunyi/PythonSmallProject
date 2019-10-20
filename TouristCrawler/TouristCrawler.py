@@ -1,10 +1,14 @@
 import requests
 import re
 from bs4 import BeautifulSoup
+import pymysql
 
 
 
 class TouristCrawler(object):
+
+    def __init__(self):
+        self.SqlManger = SqlManger()
 
     def XieCheng(self, weburl):
         print("Begin Start:%s" %(weburl))
@@ -81,9 +85,9 @@ class TouristCrawler(object):
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36",
             }
             mdd_src_list = []
-            for i in range(1, 3):
+            for i in range(1, 10):
                 data = {
-                    "mddid":"12810",
+                    "mddid":"14575",
                     "page":"%s"%(i),
                     "type":"2",
                     "_ts":"1570885642489",
@@ -106,62 +110,242 @@ class TouristCrawler(object):
             print("Error:", error)
 
     def MafengWo2(self,urlSet):
-        try:
-            # 循环传入过来的所有连接
             for i in urlSet:
-                print("BeginStatr:%s" %(i))
-                # i = "http://www.mafengwo.cn/mdd/route/12810_101612.html"
-                header = {
-                    "referer":"%s" %(i),
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
-                }
-                r = requests.get(i, headers=header, verify=False, allow_redirects=True, timeout=5)
-                # 替换掉被魔改的内容
-                ALLHTML = r.content.decode("utf-8").replace('\\',"")
-                # 获取该路径的标题
-
-                title = re.findall("<h1>(.*?)</h1>",ALLHTML)[0]
-                # 获取该路径，所需要的天数
-                titleDay = re.findall("\d",title)[0] + "天"
-                # 将获得的html文档进行一次文档整合
-                ALLHTML = str(ALLHTML).encode("utf-8").decode("utf-8")
-                # 使用BS4开始处理一些困难的html元素
-                soup = BeautifulSoup(ALLHTML, 'html.parser')
-                # 找到，旅游路径的简单基本时间路线的TAG标签
-                dayWayAll = soup.select(".J_overview .day")
-                if dayWayAll == []:
-                    # 特殊情况，如果该页面没有含有day Class类。
-                    dayWayAll = soup.select(".J_overview a")
-                    dayWay_Time = "第1天"
-                dayWayContent = []
-                # 遍历该便签，将所有获得的内容存入列表中
-                for i in enumerate(dayWayAll):
-                    if dayWay_Time != "":
+                try:
+                    # 循环传入过来的所有连接
+                    print("BeginStatr:%s" %(i))
+                    # i = "http://www.mafengwo.cn/mdd/route/12810_101612.html"
+                    header = {
+                        "referer":"%s" %(i),
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
+                    }
+                    r = requests.get(i, headers=header, verify=False, allow_redirects=True, timeout=5)
+                    # 替换掉被魔改的内容
+                    ALLHTML = r.content.decode("utf-8").replace('\\',"")
+                    # 获取该路径的标题
+                    title = re.findall("<h1>(.*?)</h1>",ALLHTML)[0]
+                    # 获取该路径，所需要的天数
+                    titleDay = re.findall("\d",title)[0] + "天"
+                    # 获取网页中的旅行权重
+                    quanzhong = re.findall('<p><em>(.*?)</em>',ALLHTML)[0]
+                    # 将获得的html文档进行一次文档整合
+                    ALLHTML = str(ALLHTML).encode("utf-8").decode("utf-8")
+                    # 使用BS4开始处理一些困难的html元素
+                    soup = BeautifulSoup(ALLHTML, 'html.parser')
+                    # 找到，旅游路径的简单基本时间路线的TAG标签
+                    dayWayAll = soup.select(".J_overview .day")
+                    if dayWayAll == []:
+                        # 特殊情况，如果该页面没有含有day Class类。
+                        dayWayAll = soup.select(".J_overview a")
+                    dayWayContent = []
+                    # 遍历该便签，将所有获得的内容存入列表中
+                    # 新添加一个路程路线字符串 String_DayWay
+                    for i in enumerate(dayWayAll):
                         dayWay_Time = "第" + str(i[0] + 1) + "天"
-                    dayWay_Way = re.findall(">(.*?)</a>",str(i[1]))
-                    dayWay_Way.insert(0,str(dayWay_Time))
-                    dayWayContent.append(dayWay_Way)
-                # 查找下一个具体内容的旅游路程列表
-                wayAllContent = soup.select(".day-item")
-                for i in enumerate(wayAllContent):
-                    # 将路径的评论内容添加到一个内容表格中
-                    dayWay_Way_Content = re.findall('<div class="poi-txt">(.*?)</div>', str(i[1]))
-                    dayWayContent[i[0]].append(str(dayWay_Way_Content))
-                # 再把之前的两个内容，添加到内容列表中
-                dayWayContent.insert(0,titleDay)
-                dayWayContent.insert(0,title)
+                        #     寻找所有的A元素
+                        dayWay_Way = re.findall(">(.*?)</a>",str(i[1]))
+                        dayWay_Way.insert(0,str(dayWay_Time))
+                        dayWayContent.append(dayWay_Way)
+                    # 查找下一个具体内容的旅游路程列表
+                    wayAllContent = soup.select(".day-item")
+                    for i in enumerate(wayAllContent):
+                        if i[0] < 4 :
+                            # 将路径的评论内容添加到一个内容表格中
+                            dayWay_Way_Content = re.findall('<div class="poi-txt">(.*?)</div>', str(i[1]))
+                            dayWay_Way_Img = re.findall('<img class="lazy" data-original="(.*?)"', str(i[1]))
+                            try:
+                                if dayWayContent[i[0]] != False:
+                                    dayWayContent[i[0]].append([str(dayWay_Way_Content),dayWay_Way_Img])
+                            except BaseException as e:
+                                print("for i in enumerate(wayAllContent):", e)
+                                continue
+                    # 再把之前的两个内容，添加到内容列表中
+                    dayWayContent.insert(0,quanzhong)
+                    dayWayContent.insert(0,titleDay)
+                    dayWayContent.insert(0,title)
+                    # 循环数据处理掉不必要的数据
+                    for i in dayWayContent:
+                        if isinstance(i,list) == True and len(i) == 2:
+                            dayWayContent.pop()
+                    self.SqlManger.begin_insert_data(dayWayContent)
+                except BaseException as error:
+                    print("2Error:", error)
+                    continue
 
-                for i in dayWayContent:
-                    if isinstance(i,list) == True and len(i) == 2:
-                        dayWayContent.pop()
 
+class SqlManger(object):
 
+    def connect(self):
+        '''
+            # connent(参数列表[“IP地址”，“数据库账号”， “数据库密码”， “数据库名称”])
+        :return:
+        '''
+        self.db = pymysql.connect("120.27.144.96", "root", "Aa123456", "luxing")
+        # 使用cursor游标，创建一个游标对象cursor
+        self.cursor = self.db.cursor()
+        return True
 
-                print(dayWayContent)
+    def close(self):
+        '''
+        # connent(参数列表[“IP地址”，“数据库账号”， “数据库密码”， “数据库名称”])
+        :return:
+        '''
+        self.cursor.close()
+        # 数据库关闭
+        self.db.close()
+        return True
 
+    def begin_insert_data(self,data):
+        dayWayContent = data
 
-        except BaseException as error:
-            print("2Error:", error)
+        biaoti = dayWayContent[0]
+        typex = "省内"
+        quanzhong = dayWayContent[2]
+        dayx = dayWayContent[1]
+        string_luxian = "出发地"
+        for i in dayWayContent:
+            if isinstance(i, list) == True:
+                string_luxian += "->"
+                string_luxian += i[1]
+        Amap = ""
+        img = ""
+        cs1 = dayWayContent[3][1]
+        try:
+            ywgl1 = dayWayContent[3][2][0]
+        except BaseException as e:
+            print("赋值有误，ywgl1")
+            ywgl1 = ["",""]
+        luxian = string_luxian
+        try:
+            img1 = dayWayContent[3][2][1]
+        except BaseException as e:
+            print("赋值有误，img1")
+            img1 = ["",""]
+        try:
+            zsgl1 = dayWayContent[3][2][0]
+        except BaseException as e:
+            print("赋值有误，zsgl1")
+            zsgl1 = ["",""]
+        try:
+            zsmap1 = dayWayContent[3][2][1]
+        except BaseException as e:
+            print("赋值有误，zsmap1")
+            zsmap1 = ["",""]
+
+        cs2 = dayWayContent[4][1]
+        try:
+            ywgl2 = dayWayContent[4][2][0]
+        except BaseException as e:
+            print("赋值有误，ywgl2")
+            ywgl2 = ["",""]
+        luxian = string_luxian
+        try:
+            img2 = dayWayContent[4][2][1]
+        except BaseException as e:
+            print("赋值有误，img2")
+            img2 = ["",""]
+        try:
+            zsgl2 = dayWayContent[4][2][0]
+        except BaseException as e:
+            print("赋值有误，zsgl2")
+            zsgl2 = ["",""]
+        try:
+            zsmap2 = dayWayContent[4][2][1]
+        except BaseException as e:
+            print("赋值有误，zsmap2")
+            zsmap2 = ["",""]
+
+        cs3 = dayWayContent[5][1]
+        try:
+            ywgl3 = dayWayContent[5][2][0]
+        except BaseException as e:
+            print("赋值有误，ywgl3")
+            ywgl3 = ["",""]
+        luxian = string_luxian
+        try:
+            img3 = dayWayContent[5][2][1]
+        except BaseException as e:
+            print("赋值有误，img3")
+            img3 = ["",""]
+        try:
+            zsgl3 = dayWayContent[5][2][0]
+        except BaseException as e:
+            print("赋值有误，zsgl3")
+            zsgl3 = ["",""]
+        try:
+            zsmap3 = dayWayContent[5][2][1]
+        except BaseException as e:
+            print("赋值有误，zsmap3")
+            zsmap3 = ["",""]
+
+        cs4 = dayWayContent[6][1]
+        try:
+            ywgl4 = dayWayContent[6][2][0]
+        except BaseException as e:
+            print("赋值有误，ywgl4")
+            ywgl4 = ["",""]
+        luxian = string_luxian
+        try:
+            img4 = dayWayContent[6][2][1]
+        except BaseException as e:
+            print("赋值有误，img4")
+            img4 = ["",""]
+        try:
+            zsgl4 = dayWayContent[6][2][0]
+        except BaseException as e:
+            print("赋值有误，zsgl4")
+            zsgl4 = ["",""]
+        try:
+            zsmap4 = dayWayContent[6][2][1]
+        except BaseException as e:
+            print("赋值有误，zsmap4")
+            zsmap4 = ["",""]
+        sql = '''INSERT INTO data (biaoti,typex,quanzhong,dayx,lx,map,img,cs1,ywgl1,lx1,img1,zsgl1,zsmap1,cs2,ywgl2,lx2,img2,zsgl2,zsmap2,cs3,ywgl3,lx3,img3,zsgl3,zsmap3,cs4,ywgl4,lx4,img4,zsgl4,zsmap4  ) Values ("%s", "%s", "%s", "%s", "%s","%s", "%s", "%s", "%s", "%s","%s", "%s", "%s", "%s", "%s","%s", "%s", "%s", "%s", "%s","%s", "%s", "%s", "%s", "%s","%s", "%s", "%s", "%s", "%s","%s")''' % (
+            biaoti,
+            typex,
+            quanzhong,
+            dayx,
+            luxian,
+            Amap,
+            img,
+            cs1,
+            str(ywgl1).replace("[","").replace("]","").replace("'",""),
+            luxian,
+            img1[0],
+            str(zsgl1).replace("[", "").replace("]", "").replace("'", ""),
+            zsmap1[1],
+            cs2,
+            str(ywgl2).replace("[","").replace("]","").replace("'",""),
+            luxian,
+            img2[0],
+            str(zsgl2).replace("[", "").replace("]", "").replace("'", ""),
+            zsmap2[1],
+            cs3,
+            str(ywgl3).replace("[","").replace("]","").replace("'",""),
+            luxian,
+            img3[0],
+            str(zsgl3).replace("[", "").replace("]", "").replace("'", ""),
+            zsmap3[1],
+            cs4,
+            str(ywgl4).replace("[","").replace("]","").replace("'",""),
+            luxian,
+            img4[0],
+            str(zsgl4).replace("[", "").replace("]", "").replace("'", ""),
+            zsmap4[1],
+        )
+
+        try:
+            # 连接数据库
+            self.connect()
+            # 执行sql语句
+            self.cursor.execute(sql)
+            # 提交到数据库执行
+            self.db.commit()
+            # 关闭数据库
+            self.close()
+        except:
+            self.db.rollback()
+
 
 
 if __name__ == "__main__":
