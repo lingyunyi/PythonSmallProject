@@ -9,8 +9,14 @@ class TouristCrawler(object):
 
     def __init__(self):
         self.SqlManger = SqlManger()
+        self.MaFengWoListNum = 0
 
     def XieCheng(self, weburl):
+        '''
+            对基本的网站的内容进行获取和控制
+        :param weburl:
+        :return:
+        '''
         print("Begin Start:%s" %(weburl))
         try:
             header = {
@@ -43,6 +49,11 @@ class TouristCrawler(object):
 
 
     def QiongYou(self,searchCity):
+        '''
+            对穷游网站的旅游途径进行基本的解析和获取
+        :param searchCity:
+        :return:
+        '''
         print("Begin Start:http://plan.qyer.com/api/v3/recommend/getpoilist")
         try:
             weburl = "http://plan.qyer.com/api/v3/recommend/getpoilist"
@@ -71,14 +82,16 @@ class TouristCrawler(object):
                     imageA = str(image[i]).replace("\\","")[0:-1]
                     commentA = str(comment[i]).replace(r"\\","\\").encode("utf-8").decode('unicode_escape')
                     print(i,citySignA,imageA,commentA)
-
-
-
         except BaseException as error:
             print("Error:", error)
 
 
-    def MaFengWo(self):
+    def MaFengWo(self,cityMddid):
+        '''
+            接收来源于mafengwo3函数传来的mddid城市地址代数进行二次解析获取真实地址传给函数2进行再次过滤获取地址
+        :param cityMddid:
+        :return:
+        '''
         try:
             weburl = "http://www.mafengwo.cn/mdd/base/routeline/pagedata_routelist"
             header = {
@@ -87,7 +100,7 @@ class TouristCrawler(object):
             mdd_src_list = []
             for i in range(1, 10):
                 data = {
-                    "mddid":"14575",
+                    "mddid":cityMddid,
                     "page":"%s"%(i),
                     "type":"2",
                     "_ts":"1570885642489",
@@ -105,72 +118,99 @@ class TouristCrawler(object):
 
             mdd_src_set = set(mdd_src_list)
             print(mdd_src_set)
+            self.MaFengWoListNum += len(mdd_src_set)
             self.MafengWo2(mdd_src_set)
         except BaseException as error:
             print("Error:", error)
 
     def MafengWo2(self,urlSet):
-            for i in urlSet:
-                try:
-                    # 循环传入过来的所有连接
-                    print("BeginStatr:%s" %(i))
-                    # i = "http://www.mafengwo.cn/mdd/route/12810_101612.html"
-                    header = {
-                        "referer":"%s" %(i),
-                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
-                    }
-                    r = requests.get(i, headers=header, verify=False, allow_redirects=True, timeout=5)
-                    # 替换掉被魔改的内容
-                    ALLHTML = r.content.decode("utf-8").replace('\\',"")
-                    # 获取该路径的标题
-                    title = re.findall("<h1>(.*?)</h1>",ALLHTML)[0]
-                    # 获取该路径，所需要的天数
-                    titleDay = re.findall("\d",title)[0] + "天"
-                    # 获取网页中的旅行权重
-                    quanzhong = re.findall('<p><em>(.*?)</em>',ALLHTML)[0]
-                    # 将获得的html文档进行一次文档整合
-                    ALLHTML = str(ALLHTML).encode("utf-8").decode("utf-8")
-                    # 使用BS4开始处理一些困难的html元素
-                    soup = BeautifulSoup(ALLHTML, 'html.parser')
-                    # 找到，旅游路径的简单基本时间路线的TAG标签
-                    dayWayAll = soup.select(".J_overview .day")
-                    if dayWayAll == []:
-                        # 特殊情况，如果该页面没有含有day Class类。
-                        dayWayAll = soup.select(".J_overview a")
-                    dayWayContent = []
-                    # 遍历该便签，将所有获得的内容存入列表中
-                    # 新添加一个路程路线字符串 String_DayWay
-                    for i in enumerate(dayWayAll):
-                        dayWay_Time = "第" + str(i[0] + 1) + "天"
-                        #     寻找所有的A元素
-                        dayWay_Way = re.findall(">(.*?)</a>",str(i[1]))
-                        dayWay_Way.insert(0,str(dayWay_Time))
-                        dayWayContent.append(dayWay_Way)
-                    # 查找下一个具体内容的旅游路程列表
-                    wayAllContent = soup.select(".day-item")
-                    for i in enumerate(wayAllContent):
-                        if i[0] < 4 :
-                            # 将路径的评论内容添加到一个内容表格中
-                            dayWay_Way_Content = re.findall('<div class="poi-txt">(.*?)</div>', str(i[1]))
-                            dayWay_Way_Img = re.findall('<img class="lazy" data-original="(.*?)"', str(i[1]))
-                            try:
-                                if dayWayContent[i[0]] != False:
-                                    dayWayContent[i[0]].append([str(dayWay_Way_Content),dayWay_Way_Img])
-                            except BaseException as e:
-                                print("for i in enumerate(wayAllContent):", e)
-                                continue
-                    # 再把之前的两个内容，添加到内容列表中
-                    dayWayContent.insert(0,quanzhong)
-                    dayWayContent.insert(0,titleDay)
-                    dayWayContent.insert(0,title)
-                    # 循环数据处理掉不必要的数据
-                    for i in dayWayContent:
-                        if isinstance(i,list) == True and len(i) == 2:
-                            dayWayContent.pop()
-                    self.SqlManger.begin_insert_data(dayWayContent)
-                except BaseException as error:
-                    print("2Error:", error)
-                    continue
+        '''
+            接受来源于，经过mafengwo函数解析过后传来的所有路线的网页地址，进行具体内容的破解和获取
+        :param urlSet:
+        :return:
+        '''
+        for i in urlSet:
+            try:
+                # 循环传入过来的所有连接
+                print("BeginStatr:%s" %(i))
+                # i = "http://www.mafengwo.cn/mdd/route/12810_101612.html"
+                header = {
+                    "referer":"%s" %(i),
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
+                }
+                r = requests.get(i, headers=header, verify=False, allow_redirects=True, timeout=5)
+                # 替换掉被魔改的内容
+                ALLHTML = r.content.decode("utf-8").replace('\\',"")
+                # 获取该路径的标题
+                title = re.findall("<h1>(.*?)</h1>",ALLHTML)[0]
+                # 获取该路径，所需要的天数
+                titleDay = re.findall("\d",title)[0] + "天"
+                # 获取网页中的旅行权重
+                quanzhong = re.findall('<p><em>(.*?)</em>',ALLHTML)[0]
+                # 将获得的html文档进行一次文档整合
+                ALLHTML = str(ALLHTML).encode("utf-8").decode("utf-8")
+                # 使用BS4开始处理一些困难的html元素
+                soup = BeautifulSoup(ALLHTML, 'html.parser')
+                # 找到，旅游路径的简单基本时间路线的TAG标签
+                dayWayAll = soup.select(".J_overview .day")
+                if dayWayAll == []:
+                    # 特殊情况，如果该页面没有含有day Class类。
+                    dayWayAll = soup.select(".J_overview a")
+                dayWayContent = []
+                # 遍历该便签，将所有获得的内容存入列表中
+                # 新添加一个路程路线字符串 String_DayWay
+                for i in enumerate(dayWayAll):
+                    dayWay_Time = "第" + str(i[0] + 1) + "天"
+                    #     寻找所有的A元素
+                    dayWay_Way = re.findall(">(.*?)</a>",str(i[1]))
+                    dayWay_Way.insert(0,str(dayWay_Time))
+                    dayWayContent.append(dayWay_Way)
+                # 查找下一个具体内容的旅游路程列表
+                wayAllContent = soup.select(".day-item")
+                for i in enumerate(wayAllContent):
+                    if i[0] < 4 :
+                        # 将路径的评论内容添加到一个内容表格中
+                        dayWay_Way_Content = re.findall('<div class="poi-txt">(.*?)</div>', str(i[1]))
+                        dayWay_Way_Img = re.findall('<img class="lazy" data-original="(.*?)"', str(i[1]))
+                        try:
+                            if dayWayContent[i[0]] != False:
+                                dayWayContent[i[0]].append([str(dayWay_Way_Content),dayWay_Way_Img])
+                        except BaseException as e:
+                            print("for i in enumerate(wayAllContent):", e)
+                            continue
+                # 再把之前的两个内容，添加到内容列表中
+                dayWayContent.insert(0,quanzhong)
+                dayWayContent.insert(0,titleDay)
+                dayWayContent.insert(0,title)
+                # 循环数据处理掉不必要的数据
+                for i in dayWayContent:
+                    if isinstance(i,list) == True and len(i) == 2:
+                        dayWayContent.pop()
+                self.SqlManger.begin_insert_data(dayWayContent)
+            except BaseException as error:
+                print("2Error:", error)
+                continue
+        print("实际数量总数量:%s" %self.MaFengWoListNum)
+
+    def MAfengWo3_GetAllCityMddid(self):
+        '''
+            遍历该网站，强获取，所有网页的地址城市的mddid
+        :return:
+        '''
+        try:
+            weburl = "http://www.mafengwo.cn/mdd/"
+            header = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36",
+            }
+            r = requests.post(weburl, headers=header, verify=False, allow_redirects=True, timeout=5,)
+            ALLHTML = r.text.replace('\\',"")
+            ALLHTML2 = ALLHTML.encode("utf-8").decode('unicode_escape')
+            allCityMddidList = set(re.findall("/travel-scenic-spot/mafengwo/(.*?)\.html",ALLHTML2))
+            for i in allCityMddidList:
+                if i != "":
+                    self.MaFengWo(i)
+        except BaseException as error:
+            print("Error:", error)
 
 
 class SqlManger(object):
@@ -199,7 +239,7 @@ class SqlManger(object):
         dayWayContent = data
 
         biaoti = dayWayContent[0]
-        typex = "省内"
+        typex = dayWayContent[3][1]
         quanzhong = dayWayContent[2]
         dayx = dayWayContent[1]
         string_luxian = "出发地"
@@ -210,6 +250,7 @@ class SqlManger(object):
         Amap = ""
         img = ""
         cs1 = dayWayContent[3][1]
+
         try:
             ywgl1 = dayWayContent[3][2][0]
         except BaseException as e:
@@ -300,7 +341,7 @@ class SqlManger(object):
         except BaseException as e:
             print("赋值有误，zsmap4")
             zsmap4 = ["",""]
-        sql = '''INSERT INTO data (biaoti,typex,quanzhong,dayx,lx,map,img,cs1,ywgl1,lx1,img1,zsgl1,zsmap1,cs2,ywgl2,lx2,img2,zsgl2,zsmap2,cs3,ywgl3,lx3,img3,zsgl3,zsmap3,cs4,ywgl4,lx4,img4,zsgl4,zsmap4  ) Values ("%s", "%s", "%s", "%s", "%s","%s", "%s", "%s", "%s", "%s","%s", "%s", "%s", "%s", "%s","%s", "%s", "%s", "%s", "%s","%s", "%s", "%s", "%s", "%s","%s", "%s", "%s", "%s", "%s","%s")''' % (
+        sql = '''INSERT INTO data (biaoti,type,bl,day,lx,map,img,cs1,ywgl1,lx1,img1,zsgl1,zsmap1,cs2,ywgl2,lx2,img2,zsgl2,zsmap2,cs3,ywgl3,lx3,img3,zsgl3,zsmap3,cs4,ywgl4,lx4,img4,zsgl4,zsmap4  ) Values ("%s", "%s", "%s", "%s", "%s","%s", "%s", "%s", "%s", "%s","%s", "%s", "%s", "%s", "%s","%s", "%s", "%s", "%s", "%s","%s", "%s", "%s", "%s", "%s","%s", "%s", "%s", "%s", "%s","%s")''' % (
             biaoti,
             typex,
             quanzhong,
@@ -343,7 +384,8 @@ class SqlManger(object):
             self.db.commit()
             # 关闭数据库
             self.close()
-        except:
+        except BaseException as error:
+            print("Sql insert Error:",error)
             self.db.rollback()
 
 
@@ -355,4 +397,4 @@ if __name__ == "__main__":
     #     weburl = "https://vacations.ctrip.com/list/grouptravel/d-guangxi-100052.html?p=%s" %(i)
     #     get.XieCheng(weburl)
     # get.QiongYou("")
-    get.MaFengWo()
+    get.MAfengWo3_GetAllCityMddid()
