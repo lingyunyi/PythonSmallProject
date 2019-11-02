@@ -31,9 +31,11 @@ def indexShow():
             SqlManger_Class_A.append(i)
     # 尝试获取首页内容，如果不行，直接赋值为空
     try:
-        IndexContent = golbalData["IndexContent"]
+        fileRead_IndexContent = open('IndexContent.txt', 'rb')
+        IndexContentDICT = pickle.load(fileRead_IndexContent)
+        IndexContent = IndexContentDICT['IndexContent']
     except:
-        IndexContent = "暂无公告......"
+        IndexContent = "暂无公告喵喵喵~~~"
     return render_template('/index.html', DataDict=golbalData["WebShell"],DataList=SqlManger_Class_A,ImgData=ImgData,IndexContent=IndexContent)
 
 @app.route("/biantai/")
@@ -60,9 +62,11 @@ def biantai():
             SqlManger_Class_H.append(i)
     # 尝试获取首页内容，如果不行，直接赋值为空
     try:
-        IndexContent = golbalData["IndexContent"]
+        fileRead_IndexContent = open('IndexContent.txt', 'rb')
+        IndexContentDICT = pickle.load(fileRead_IndexContent)
+        IndexContent = IndexContentDICT['IndexContent']
     except:
-        IndexContent = "暂无公告......"
+        IndexContent = "暂无公告喵喵喵~~~"
     return render_template('/index.html', DataDict=golbalData["WebShell"],DataList=SqlManger_Class_H,ImgData=ImgData,IndexContent=IndexContent)
 
 @app.route("/admin/",methods=['POST', 'GET'])
@@ -73,24 +77,19 @@ def IndexPost():
         return render_template("/admin/index.html")
     if request.method == 'POST':
         print(request.form)
-        if request.form.get('Account') == "lingyunyi":
-            # 打开序列化过后的文件，进行反序列化处理
-            fileRead = open('TemplateData.txt', 'rb')
-            # 打开序列化过后的文件，进行反序列化处理
-            golbalData = pickle.load(fileRead)
-            fileRead.close()
-            # 给全局变量再次赋值
-            golbalData['IndexContent'] = request.form.get('IndexContent')
-            print("golbalData['IndexContent']",request.form.get('IndexContent'))
+        if request.form.get('Account') == "lingyunyi" and request.form.get('IndexContent') != "":
+            IndexContentDICT = {}
+            IndexContentDICT['IndexContent'] = request.form.get('IndexContent')
+            print("IndexContentDICT['IndexContent']",request.form.get('IndexContent'))
             # 序列化到全局变量文件中
-            fileOpen = open('TemplateData.txt', 'wb')
-            pickle.dump(golbalData, fileOpen)
+            fileOpen = open('IndexContent.txt', 'wb')
+            pickle.dump(IndexContentDICT, fileOpen)
             fileOpen.close()
-        return render_template("/admin/index.html")
+    return render_template("/admin/index.html")
 
 @app.route("/payment/")
 def payment():
-    return render_template("payment.html")
+    return render_template("/payment.html")
 
 if __name__ == '__main__':
     app.run(debug=True)
