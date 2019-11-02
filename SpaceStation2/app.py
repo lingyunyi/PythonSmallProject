@@ -88,6 +88,9 @@ def IndexPost():
             fileOpen.close()
         return render_template("/admin/index.html")
 
+@app.route("/payment/")
+def payment():
+    return render_template("payment.html")
 
 if __name__ == '__main__':
     app.run(debug=True)
