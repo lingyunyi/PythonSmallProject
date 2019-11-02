@@ -97,6 +97,7 @@ class webShell(object):
             # 获取所有需要的DIV标签
             response_IMG = re.findall('img src="(.*?)@', str(response_DIV))
             for i in range(len(response_A)):
+                print("获得URL：%s" % (response_A[i]))
                 golbalData["BiliBili"][response_A[i]] = response_IMG[i]
         except BaseException as error:
             print("Get_BiliBili_Img_Url----------\n", error)
@@ -115,6 +116,7 @@ class webShell(object):
             response_IMG = re.findall('img src="(.*?)@', str(response_DIV))
             for i in range(len(response_A)):
                 if i < 6:
+                    print("获得URL：%s"%(response_A[i]))
                     golbalData["BiliBili"][response_A[i]] = response_IMG[i]
         except BaseException as error:
             print("Get_BiliBili_Img_Url_guochan----------\n", error)
