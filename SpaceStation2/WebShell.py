@@ -65,7 +65,7 @@ class webShell(object):
             # 构造ping命令
             # http: // www.baidu.com 带有HTTP:ping不了，解剖才行
 
-            webURL2 = webURL.split("/")[-1]
+            webURL2 = webURL.split("/")[2]
 
             command = "ping -c 2 %s" % (webURL2)
 
