@@ -7,7 +7,7 @@
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
           crossorigin="anonymous">
     <meta name="referrer" content="no-referrer"/>
-    <meta http-equiv="refresh" content="5"/>
+{#    <meta http-equiv="refresh" content="5"/>#}
     <title>次元入口 - 从这里进入未知的次元世界</title>
 </head>
 <body>
@@ -19,15 +19,20 @@
     </div>
 </nav>
 
+
+
+
 <div class="container-fulid"
      style="background:url(../static/img/background.png) no-repeat;background-attachment: fixed;">
 
     <div class="container" style="background: rgba(255, 255, 255, 0.5);padding-top: 20px">
 
-        <div class="jumbotron" style="padding: 0;overflow: hidden;">
-            <a href="{{ ImgData[0][0] }}" target="_blank" title="欢迎点击图片跳转相应页面查看详情......">
-                <img src="{{ ImgData[0][1] }}">
-            </a>
+        <div class="jumbotron" style="padding: 0;overflow: hidden;" id="jumbotron">
+            {% for i in ImgData.items() %}
+                <a href="{{ i[0] }}" target="_blank" title="欢迎点击图片跳转相应页面查看详情......">
+                    <img src="{{ i[1] }}">
+                </a>
+            {% endfor %}
         </div>
 
 
@@ -83,6 +88,34 @@
     </div>
 </div>
 </body>
+<script>
+    function randomNum(minNum,maxNum){
+        switch(arguments.length){
+            case 1:
+                return parseInt(Math.random()*minNum+1,10);
+            break;
+            case 2:
+                return parseInt(Math.random()*(maxNum-minNum+1)+minNum,10);
+            break;
+                default:
+                    return 0;
+                break;
+        }
+    }
+    randomImg();
+    function randomImg() {
+        var items = document.getElementById("jumbotron").getElementsByTagName("a");
+        for(var i=0; i<items.length; i++){
+        console.log(items.length)
+        items[i].style.display="none";
+        };
+        var randomint = randomNum(0,9)
+        items[randomint].style.display = "block";
+    }
+
+    window.setInterval(randomImg,5000);
+
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous">

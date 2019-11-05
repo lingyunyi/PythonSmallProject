@@ -15,13 +15,13 @@ def indexShow():
     golbalData = pickle.load(fileRead)
     # 获取 全局类 大字典文件。哔哩哔哩字典
     imgData = golbalData["BiliBili"]
-    # 将哔哩哔哩的内容随机取值
-    randomKey = random.choice(list(imgData.keys()))
-    # 将所有哔哩哔哩的内容取值
-    randomValue = imgData[randomKey]
-    ImgData = []
-    # 将按照对应关系进行处理
-    ImgData.append([randomKey,randomValue])
+    # # 将哔哩哔哩的内容随机取值
+    # randomKey = random.choice(list(imgData.keys()))
+    # # 将所有哔哩哔哩的内容取值
+    # randomValue = imgData[randomKey]
+    # ImgData = []
+    # # 将按照对应关系进行处理
+    # ImgData.append([randomKey,randomValue])
     # 将SQLmanager的数据进行一下分类
     SqlManger_Class_A = []
     # 循环全部SQLmanager列表获取数据
@@ -36,7 +36,7 @@ def indexShow():
         IndexContent = IndexContentDICT['IndexContent']
     except:
         IndexContent = "暂无公告喵喵喵~~~"
-    return render_template('/index.html', DataDict=golbalData["WebShell"],DataList=SqlManger_Class_A,ImgData=ImgData,IndexContent=IndexContent)
+    return render_template('/index.html', DataDict=golbalData["WebShell"],DataList=SqlManger_Class_A,ImgData=imgData,IndexContent=IndexContent)
 
 @app.route("/biantai/")
 def biantai():
@@ -46,14 +46,14 @@ def biantai():
     golbalData = pickle.load(fileRead)
     # 获取 全局类 大字典文件。哔哩哔哩字典
     imgData = golbalData["BiliBili"]
-    # 将哔哩哔哩的内容随机取值
-    randomKey = random.choice(list(imgData.keys()))
-    # 将所有哔哩哔哩的内容取值
-    randomValue = imgData[randomKey]
-    ImgData = []
-    # 将按照对应关系进行处理
-    ImgData.append([randomKey,randomValue])
-    # 将SQLmanager的数据进行一下分类
+    # # 将哔哩哔哩的内容随机取值
+    # randomKey = random.choice(list(imgData.keys()))
+    # # 将所有哔哩哔哩的内容取值
+    # randomValue = imgData[randomKey]
+    # ImgData = []
+    # # 将按照对应关系进行处理
+    # ImgData.append([randomKey,randomValue])
+    # # 将SQLmanager的数据进行一下分类
     SqlManger_Class_H = []
     # 循环全部SQLmanager列表获取数据
     for i in golbalData["SqlManger"]:
@@ -67,7 +67,7 @@ def biantai():
         IndexContent = IndexContentDICT['IndexContent']
     except:
         IndexContent = "暂无公告喵喵喵~~~"
-    return render_template('/index.html', DataDict=golbalData["WebShell"],DataList=SqlManger_Class_H,ImgData=ImgData,IndexContent=IndexContent)
+    return render_template('/index.html', DataDict=golbalData["WebShell"],DataList=SqlManger_Class_H,ImgData=imgData,IndexContent=IndexContent)
 
 @app.route("/admin/",methods=['POST', 'GET'])
 def IndexPost():
