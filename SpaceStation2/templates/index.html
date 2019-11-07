@@ -102,15 +102,20 @@
                 break;
         }
     }
+
+    var ii = 0
+
     randomImg();
     function randomImg() {
         var items = document.getElementById("jumbotron").getElementsByTagName("a");
         for(var i=0; i<items.length; i++){
-        console.log(items.length)
         items[i].style.display="none";
         };
-        var randomint = randomNum(0,9)
-        items[randomint].style.display = "block";
+        items[ii].style.display = "block";
+        ii++
+        if( ii > 9){
+            ii = 0
+        }
     }
 
     window.setInterval(randomImg,5000);
