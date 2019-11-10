@@ -106,7 +106,8 @@
     var ii = 0
 
     randomImg();
-    function randomImg() {
+    function foriinImg() {
+        {#  循环播放  #}
         var items = document.getElementById("jumbotron").getElementsByTagName("a");
         for(var i=0; i<items.length; i++){
         items[i].style.display="none";
@@ -118,6 +119,16 @@
         }
     }
 
+    function randomImg() {
+         {#  随机播放  #}
+         var items = document.getElementById("jumbotron").getElementsByTagName("a");
+         for(var i=0; i<items.length; i++){
+         console.log(items.length)
+         items[i].style.display="none";
+         };
+         var randomint = randomNum(0,9)
+         items[randomint].style.display = "block";
+     }
     window.setInterval(randomImg,5000);
 
 </script>
