@@ -114,7 +114,7 @@
         };
         items[ii].style.display = "block";
         ii++
-        if( ii > 9){
+        if( ii > (items.length-1)){
             ii = 0
         }
     }
@@ -126,7 +126,7 @@
          console.log(items.length)
          items[i].style.display="none";
          };
-         var randomint = randomNum(0,9)
+         var randomint = randomNum(0,(items.length-1))
          items[randomint].style.display = "block";
      }
     window.setInterval(randomImg,5000);
