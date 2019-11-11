@@ -112,7 +112,8 @@ class webShell(object):
                 response_IMG = re.findall('img src="(.*?)@', str(response_DIV))
                 for i in range(len(response_A)):
                     print("获得URL：%s" % (response_A[i]))
-                    golbalData["BiliBili"][response_A[i]] = response_IMG[i]
+                    if i < 6:
+                        golbalData["BiliBili"][response_A[i]] = response_IMG[i]
             except BaseException as error:
                 print("Get_BiliBili_Img_Url----------\n", error)
 
