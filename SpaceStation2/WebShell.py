@@ -89,7 +89,7 @@ class webShell(object):
     def All_Bilibili_Img_Url(self):
         All_Url_List = [
             "https://www.bilibili.com/anime/",
-            "https://www.bilibili.com/anime/",
+            "https://www.bilibili.com/guochuang/",
             "https://www.bilibili.com/tv/",
             "https://www.bilibili.com/movie/",
             "https://www.bilibili.com/documentary/"
