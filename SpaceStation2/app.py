@@ -97,7 +97,8 @@ def dynamic(Account):
     for i in golbalData["SqlManger"]:
         all_Class_Set.add(i[2])
     # 开始动态判断
-    if Account == "" or Account not in all_Class_Set or session.get("account") == None:
+    if Account == "" or Account not in all_Class_Set:
+        print("进入随机界面",Account)
         if Account == "biantai":
             Account = "H"
         else:
