@@ -60,9 +60,12 @@ def login():
                 session['account'] = request.form.get('account')
                 print("欢迎登入",session.get('account'))
                 break
+        # 如果已经登入成功，直接跳转到个人版资源网站
         if session['account'] != None:
             return redirect("/{}".format(session.get('account')))
+        #  登入失败则直接跳转到首页
         return redirect("/")
+    # 异常则回转登入页面
     return render_template("/login.html")
 
 @app.route("/<string:Account>")
@@ -92,7 +95,7 @@ def dynamic(Account):
     for i in golbalData["SqlManger"]:
         all_Class_Set.add(i[2])
     # 开始动态判断
-    if Account == "" or Account not in all_Class_Set:
+    if Account == "" or Account not in all_Class_Set or session.get("account") == None:
         if Account == "biantai":
             Account = "H"
         else:
@@ -104,7 +107,7 @@ def dynamic(Account):
         print("当前登入的账号是",session.get("account"))
         # 就算登入了但是想偷看其他人的资源库，也是禁止的，个人只能访问个人的资源库
         if session.get("account") != Account:
-            Account = "A"
+            return redirect("/")
         SqlManger_dynamic_Class = [ i for i in golbalData["SqlManger"] if i[2] == Account]
     # 尝试获取首页内容，如果不行，直接赋值为空
     try:
@@ -145,6 +148,17 @@ def payment():
     '''
     return render_template("/payment.html")
 
+@app.route("/admin/")
+def admin():
+    '''
+        用户登入管理界面
+    :return:
+    '''
+#     首先判断是否已经登入个人账号
+    if session.get("account") == None:
+        # 条状到登入页面
+        return redirect("/user/login")
+#   如果已经登入，直接进入个人版管理页面
 
 
 if __name__ == '__main__':
