@@ -89,7 +89,7 @@ class webShell(object):
     def All_Bilibili_Img_Url(self):
         All_Url_List = [
             "https://www.bilibili.com/anime/",
-            "https://www.bilibili.com/guochuang/",
+            "https://www.bilibili.com/anime/",
             "https://www.bilibili.com/tv/",
             "https://www.bilibili.com/movie/",
             "https://www.bilibili.com/documentary/"
@@ -112,8 +112,7 @@ class webShell(object):
                 response_IMG = re.findall('img src="(.*?)@', str(response_DIV))
                 for i in range(len(response_A)):
                     print("获得URL：%s" % (response_A[i]))
-                    if i < 6:
-                        golbalData["BiliBili"][response_A[i]] = response_IMG[i]
+                    golbalData["BiliBili"][response_A[i]] = response_IMG[i]
             except BaseException as error:
                 print("Get_BiliBili_Img_Url----------\n", error)
 

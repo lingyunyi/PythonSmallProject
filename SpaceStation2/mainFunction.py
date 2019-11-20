@@ -18,6 +18,7 @@ def DataMaker():
         # 全局数据存储站传入，等待获得从数据库中提取到的数据
         # 再次之前，现在数据格式处理好，即将要存储的数据是，来源于数据库的数据，格式为，mysqlData = []
         golbalData["SqlManger"] = []
+        golbalData["Users"] = []
         SQL_manager = Sqlmanager.SqlManger(golbalData)
         # 到这里，已经获得来源于数据库中所有的数据，格式为golbalData["mysqlData"] = ["111","222","333","444"]
         # 接下来数据交由WebShell管理，并将数据也传入golbalData这个大字典中。

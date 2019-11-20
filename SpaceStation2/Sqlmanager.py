@@ -6,6 +6,7 @@ class SqlManger(object):
     def __init__(self,golbalData):
         self.golbalData = golbalData
         self.search_table_all_data()
+        self.search_all_users()
     def connect(self):
         '''
             # connent(参数列表[“IP地址”，“数据库账号”， “数据库密码”， “数据库名称”])
@@ -43,6 +44,24 @@ class SqlManger(object):
                     # 遍历每一行中的下标为x的值
                     # 这里只是将数据添加入内存列表中，并没有刷新内存列表
                     self.golbalData["SqlManger"].append(row)
+            self.close()
+        except:
+            # 如果发生错误则回滚
+            self.close()
+            return False
+
+    def search_all_users(self):
+        sql = ''' SELECT * FROM users '''
+        try:
+            # 连接服务器
+            self.connect()
+            # 执行SQL语句
+            self.cursor.execute(sql)
+            # 获取数据库中的表单
+            results = self.cursor.fetchall()
+            # 将数据库中的表单分成一行行
+            for row in results:
+                self.golbalData["Users"].append(row)
             self.close()
         except:
             # 如果发生错误则回滚
