@@ -118,9 +118,9 @@ def dynamic(Account):
         IndexContent = IndexContentDICT['IndexContent']
     except:
         IndexContent = "暂无公告喵喵喵~~~"
-    return render_template('/post.html', DataDict=golbalData["WebShell"],DataList=SqlManger_dynamic_Class,ImgData=imgData,IndexContent=IndexContent)
+    return render_template('/index.html', DataDict=golbalData["WebShell"],DataList=SqlManger_dynamic_Class,ImgData=imgData,IndexContent=IndexContent)
 
-@app.route("/post/",methods=['POST', 'GET'])
+@app.route("/put/",methods=['POST', 'GET'])
 def IndexPost():
     '''
         公告请求页面。
@@ -129,7 +129,7 @@ def IndexPost():
     # 现在的FLASK根据表单的name获取，而不是表单的ID
     print("Access_method",request.method)
     if request.method == "GET":
-        return render_template("/admin/post.html")
+        return render_template("/putput.html")
     if request.method == 'POST':
         print(request.form)
         if request.form.get('Account') == "lingyunyi" and request.form.get('IndexContent') != "":
@@ -140,7 +140,7 @@ def IndexPost():
             fileOpen = open('IndexContent.txt', 'wb')
             pickle.dump(IndexContentDICT, fileOpen)
             fileOpen.close()
-    return render_template("/admin/post.html")
+    return render_template("/putput.html")
 
 @app.route("/payment/")
 def payment():
