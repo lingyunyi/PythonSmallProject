@@ -44,6 +44,7 @@ class SqlManger(object):
                     # 遍历每一行中的下标为x的值
                     # 这里只是将数据添加入内存列表中，并没有刷新内存列表
                     self.golbalData["SqlManger"].append(row)
+            self.golbalData["SqlManger"].sort()
             self.close()
         except:
             # 如果发生错误则回滚
@@ -62,6 +63,7 @@ class SqlManger(object):
             # 将数据库中的表单分成一行行
             for row in results:
                 self.golbalData["Users"].append(row)
+            self.golbalData["Users"].sort()
             self.close()
         except:
             # 如果发生错误则回滚
