@@ -3,6 +3,8 @@ import re
 import subprocess
 import threading
 import random
+import time
+import Sqlmanager
 
 class webShell(object):
     '''
@@ -128,3 +130,87 @@ class webShell(object):
             "User-Agent": random.choice(USER_AGENTS),
         }
         return headers
+
+
+
+
+class ForGetAllUrlAndTitle(webShell):
+    '''
+
+    '''
+    def __init__(self,xxx_xxx_xxx):
+        # 输入某个域名
+        self.domain = xxx_xxx_xxx
+        # 类变量 set集合 目的是去掉重复的url
+        self.getUrlSet = set()
+        # 最终数据列表，用于传入其他class insert到数据库中
+        self.finalList = []
+        # 直接启动获取所有URL的函数
+        self.getAllUrl_into_Set()
+        self.getAllUrl_title()
+
+
+    def getAllUrl_into_Set(self):
+        domain = self.domain
+        '''
+            · 进行第一次请求获取该网站的所有 Url 连接
+            · 将所有URL连接存入 SET集合 中
+        '''
+
+        try:
+            # 发送一次 GET 请求
+            respond = requests.get(domain, headers=self.get_request_headers(), verify=False, allow_redirects=True, timeout=5)
+            # 将该请求转变成HTML内容
+            html = respond.content.decode("utf-8")
+            # 使用re正则提取所有URL
+            allUrl = re.findall('http[s]?://(?:(?!http[s]?://)[a-zA-Z]|[0-9]|[$\-_@.&+/]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',html)
+            allUrl = map(self.mainDomain,allUrl)
+            for i in allUrl:
+                if i != None:
+                    self.getUrlSet.add(i)
+        except BaseException as Error:
+            print(Error)
+        return self.domain
+    def get_request_headers(self):
+        '''
+            直接使用父类方法
+        '''
+        super().get_request_headers()
+    def mainDomain(self,url):
+        '''
+            只要主域名
+        '''
+        if str(url).count("/") <= 3:
+            return url
+    def getAllUrl_title(self):
+        '''
+            将所有URL连接中的URL网站里面的标题提取出来
+        '''
+        for i in self.getUrlSet:
+            try:
+                # 发送一次 GET 请求
+                respond = requests.get(i, headers=self.get_request_headers(), verify=False, allow_redirects=True,timeout=5)
+                # 将该请求转变成HTML内容
+                html = respond.content.decode("utf-8")
+                # 使用re正则提取所有URL
+                title = re.findall('<title>(.*?)</title>',html)
+                if title != " ":
+                    title = str(title).replace("&#8211","")
+                    self.finalList.append([i,"HH",title,time.strftime('%Y-%m-%d',time.localtime(time.time())),"admin",0])
+            except BaseException as Error:
+                print(Error)
+                continue
+
+
+
+
+
+
+
+
+if __name__ == "__main__":
+    getAll = ForGetAllUrlAndTitle('https://www.gal123.com/')
+    getAll.getAllUrl_into_Set()
+    sqlmanager = Sqlmanager.SqlManger(golbalData=None)
+    for i in getAll.finalList:
+        sqlmanager.insert_into_webdata(i)

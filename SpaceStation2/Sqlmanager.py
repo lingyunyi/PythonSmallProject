@@ -70,3 +70,22 @@ class SqlManger(object):
             self.close()
             return False
 
+    def insert_into_webdata(self,finallyData):
+        sql = '''INSERT INTO webdata (URL, ClassA, ClassB,CreateTime,WhoeCreate,isDelete) Values ("%s", "%s", "%s", "%s", "%s", "%s")'''\
+              % (finallyData[0], finallyData[1], str(finallyData[2]).replace("[","").replace("]","").replace("'",""), finallyData[3], finallyData[4], finallyData[5])
+        # 输出传入的值
+        # print(nowTime,name,phone)
+        try:
+            # 连接数据库
+            self.connect()
+            # 执行sql语句
+            self.cursor.execute(sql)
+            # 提交到数据库执行
+            self.db.commit()
+            # 关闭数据库
+            self.close()
+            return True, "insertTure"
+        except:
+            self.db.rollback()
+
+

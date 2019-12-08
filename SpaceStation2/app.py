@@ -6,6 +6,7 @@ import random
 import os
 from datetime import timedelta
 import hashlib
+import DataCenter
 
 
 app = Flask(__name__)
@@ -101,6 +102,8 @@ def dynamic(Account):
         print("进入随机界面",Account)
         if Account == "biantai":
             Account = "H"
+        elif Account == "heitai":
+            Account = "HH"
         else:
             Account = "A"
         SqlManger_dynamic_Class = [ i for i in golbalData["SqlManger"] if i[2] == Account]
@@ -119,6 +122,18 @@ def dynamic(Account):
         IndexContent = IndexContentDICT['IndexContent']
     except:
         IndexContent = "暂无公告喵喵喵~~~"
+    # 处理掉 网站处于wait的网页
+    tempLostList = []
+    for k,v in golbalData["WebShell"].items():
+        if v['status_code'] == "wating...":
+            tempLostList.append(k)
+    for num,li in enumerate(SqlManger_dynamic_Class):
+        if li[1] in tempLostList:
+            # 既然被删掉了，就得上报数据中心
+            SqlManger_dynamic_Class.pop(num)
+    # 既然被删掉了，就得上报数据中心
+    DataCenterA = DataCenter.ReportingCenter(tempLostURL=tempLostList)
+    # 处理掉 网站处于wait的网页
     return render_template('/index.html', DataDict=golbalData["WebShell"],DataList=SqlManger_dynamic_Class,ImgData=imgData,IndexContent=IndexContent)
 
 @app.route("/put/",methods=['POST', 'GET'])
