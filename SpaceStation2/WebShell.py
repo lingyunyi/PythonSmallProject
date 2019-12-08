@@ -194,8 +194,10 @@ class ForGetAllUrlAndTitle(webShell):
                 html = respond.content.decode("utf-8")
                 # 使用re正则提取所有URL
                 title = re.findall('<title>(.*?)</title>',html)
-                if title != " ":
+                if str(title) != " ":
                     title = str(title).replace("&#8211","")
+                    if str(i).endswith("/"):
+                        i = i[:-1]
                     self.finalList.append([i,"HH",title,time.strftime('%Y-%m-%d',time.localtime(time.time())),"admin",0])
             except BaseException as Error:
                 print(Error)
@@ -209,7 +211,7 @@ class ForGetAllUrlAndTitle(webShell):
 
 
 if __name__ == "__main__":
-    getAll = ForGetAllUrlAndTitle('https://www.gal123.com/')
+    getAll = ForGetAllUrlAndTitle('http://other1.xyz')
     getAll.getAllUrl_into_Set()
     sqlmanager = Sqlmanager.SqlManger(golbalData=None)
     for i in getAll.finalList:
