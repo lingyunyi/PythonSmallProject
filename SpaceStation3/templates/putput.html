@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+    <title>公告提交，内容上传</title>
+</head>
+<body>
+<nav class="navbar"
+     style="background:url(../static/img/banner19219.jpg) no-repeat 50% 50%;height: 160px;margin-bottom: 0">
+    <div class="container">
+        <div class="navbar-header">
+        </div>
+    </div>
+</nav>
+<div class="container-fulid"
+     style="background:url(../static/img/background.png) no-repeat;background-attachment: fixed;">
+    <div class="container" style="background: rgba(255, 255, 255, 0.5);padding-top: 20px;height: 700px">
+        <form class="form-horizontal" action="/put/" method="post">
+          <div class="form-group">
+            <label for="Account" class="col-sm-3 control-label">Account</label>
+            <div class="col-sm-6">
+              <input type="password" class="form-control" id="Account" placeholder="Account" name="Account">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="IndexContent" class="col-sm-3 control-label">IndexContent</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="IndexContent" placeholder="IndexContent" name="IndexContent">
+            </div>
+          </div>
+        <div class="container text-center">
+          <button style="width:40%" type="submit" class="btn btn-success">Post IndexContent</button>
+        </div>
+        </form>
+    </div>
+</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous">
+</script>
+</html>

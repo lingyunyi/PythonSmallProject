@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="referrer" content="no-referrer"/>
+{#    <meta http-equiv="refresh" content="5"/>#}
+    <title>次元入口 - 从这里进入未知的次元世界</title>
+</head>
+<body>
+<nav class="navbar"
+     style="background:url(../static/img/banner19219.jpg) no-repeat 50% 50%;height: 160px;margin-bottom: 0">
+    <div class="container">
+        <div class="navbar-header">
+        </div>
+    </div>
+</nav>
+
+
+<div class="container-fulid"
+     style="background:url(../static/img/background.png) no-repeat;background-attachment: fixed;">
+
+    <div class="container" style="background: rgba(255, 255, 255, 0.5);padding-top: 20px">
+
+        <div class="jumbotron" style="padding: 0;overflow: hidden;" id="jumbotron">
+            {% for i in ImgData.items() %}
+                <a href="{{ i[0] }}" target="_blank" title="欢迎点击图片跳转相应页面查看详情......">
+                    <img src="{{ i[1] }}" style="height:100%;width: 100%;max-width: 100%">
+                </a>
+            {% endfor %}
+        </div>
+
+
+        <div class="jumbotron" style="padding: 0;overflow: hidden;" id="jumbotron">
+            <a href="/intoCountUrl" target="_blank" title="欢迎点击图片跳转相应页面查看详情......">
+                <img src="../static/img/ad.png" style="height:100%;width: 100%;max-width: 100%">
+            </a>
+        </div>
+
+        <div class="panel panel panel-success">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>{{ IndexContent }}<br/>
+                <br/>
+                <b>提示：如有网站需要投稿、投建议，请发送至邮箱553378880@qq.com。感谢各位鼎力相助哦~，欢迎大力投稿哦~。</b>
+                <br/>
+                <br/>
+                <b>提示：捐赠作者 - 感谢各位老板支持我这个卑微的程序员，打赏链接   <<< <a href="/payment/" style="color:fuchsia;">QvQ点击打赏QvQ</a> >>></b>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>网站地址</th>
+                    <th>网站标题</th>
+                    <th>网站状态</th>
+                    <th>PING值</th>
+                    <th>最新时间</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if DataDict != {} %}
+                    {% for i in DataList %}
+                        {% if i[1] in DataDict.keys() %}
+                            <tr>
+                                <th>{{ i[0] }}</th>
+                                <td><a href="{{ i[1] }}" target="_blank" style="text-decoration:none;">{{ i[1] }}</a>
+                                </td>
+                                <td style="width: 436px;">{{ i[3] }}</td>
+                                {% if (DataDict[i[1]])["status_code"] != "wating..." %}
+                                    <td>{{ (DataDict[i[1]])["status_code"] }}</td>
+                                {% else %}
+                                    <td>Wait...</td>
+                                {% endif %}
+                                {% if (DataDict[i[1]])["ping_results"] != "wating..." %}
+                                    <td>{{ (DataDict[i[1]])["ping_results"] }}ms</td>
+                                {% else %}
+                                    <td>Wait...</td>
+                                {% endif %}
+                                <td><a style="text-decoration:none;">{{ i[4] }}</a></td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+<script>
+    function randomNum(minNum,maxNum){
+        switch(arguments.length){
+            case 1:
+                return parseInt(Math.random()*minNum+1,10);
+            break;
+            case 2:
+                return parseInt(Math.random()*(maxNum-minNum+1)+minNum,10);
+            break;
+                default:
+                    return 0;
+                break;
+        }
+    }
+
+    var ii = 0
+
+    randomImg();
+    function foriinImg() {
+        {#  循环播放  #}
+        var items = document.getElementById("jumbotron").getElementsByTagName("a");
+        for(var i=0; i<items.length; i++){
+        items[i].style.display="none";
+        };
+        items[ii].style.display = "block";
+        ii++
+        if( ii > (items.length-1)){
+            ii = 0
+        }
+    }
+
+    function randomImg() {
+         {#  随机播放  #}
+         var items = document.getElementById("jumbotron").getElementsByTagName("a");
+         for(var i=0; i<items.length; i++){
+         console.log(items.length)
+         items[i].style.display="none";
+         };
+         var randomint = randomNum(0,(items.length-1))
+         items[randomint].style.display = "block";
+     }
+    window.setInterval(randomImg,5000);
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous">
+</script>
+</html>
