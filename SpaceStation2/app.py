@@ -5,7 +5,7 @@ import pickle
 import random
 import os
 from datetime import timedelta
-import hashlib
+import hashlib,time
 import DataCenter
 
 
@@ -177,6 +177,30 @@ def admin():
         # 条状到登入页面
         return redirect("/user/login")
 #   如果已经登入，直接进入个人版管理页面
+
+
+
+@app.route("/admin/destroy",methods=['POST', 'GET'])
+def destroy():
+    '''
+        用户登入管理界面
+    :return:
+    '''
+    if request.args.get('status') == "stop" or request.args.get('status') == "start":
+        while True:
+            # 销毁临时数据
+            fileOpen = open('TemplateData.txt', 'w')
+            fileOpen.write("")
+            fileOpen.close()
+            print(request.args)
+            print(request.args.getlist('status'))
+            print(request.args.get('status'))
+            if request.args.get('status') == "start":
+                print("Web Server start......")
+                break
+            # 等待六十秒重新再次清洗
+            time.sleep(60 * 1)
+        return redirect("/")
 
 
 if __name__ == '__main__':
