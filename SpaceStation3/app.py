@@ -214,7 +214,7 @@ def intoCountUrl():
     fileOpen.write("\n")
     fileOpen.close()
 #   随后跳转到相应的广告页面
-    return redirect("/")
+    return redirect("https://www.2faka.cn/store/16B5D4A3A745")
 
 
 
