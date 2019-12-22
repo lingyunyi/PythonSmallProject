@@ -41,7 +41,7 @@ def login():
         return render_template("/login.html")
     if request.method == 'POST':
         print(request.form)
-        fileRead = open('TemplateData.txt', 'rb')
+        fileRead = open('TempTxt/TemplateData.txt', 'rb')
         # 打开序列化过后的文件，进行反序列化处理
         golbalData = pickle.load(fileRead)
         users = golbalData["Users"]
@@ -79,7 +79,7 @@ def dynamic(Account):
     if session.get("account") != None:
         print("当前已经登入账号",session.get("account"))
     # 打开序列化过后的文件，进行反序列化处理
-    fileRead = open('TemplateData.txt', 'rb')
+    fileRead = open('TempTxt/TemplateData.txt', 'rb')
     # 打开序列化过后的文件，进行反序列化处理
     golbalData = pickle.load(fileRead)
     # 获取 全局类 大字典文件。哔哩哔哩字典
@@ -117,7 +117,7 @@ def dynamic(Account):
         SqlManger_dynamic_Class = [ i for i in golbalData["SqlManger"] if i[2] == Account]
     # 尝试获取首页内容，如果不行，直接赋值为空
     try:
-        fileRead_IndexContent = open('IndexContent.txt', 'rb')
+        fileRead_IndexContent = open('TempTxt/IndexContent.txt', 'rb')
         IndexContentDICT = pickle.load(fileRead_IndexContent)
         IndexContent = IndexContentDICT['IndexContent']
     except:
@@ -153,7 +153,7 @@ def IndexPost():
             IndexContentDICT['IndexContent'] = request.form.get('IndexContent')
             print("IndexContentDICT['IndexContent']",request.form.get('IndexContent'))
             # 序列化到全局变量文件中
-            fileOpen = open('IndexContent.txt', 'wb')
+            fileOpen = open('TempTxt/IndexContent.txt', 'wb')
             pickle.dump(IndexContentDICT, fileOpen)
             fileOpen.close()
     return render_template("/putput.html")
@@ -183,13 +183,13 @@ def admin():
 @app.route("/admin/destroy",methods=['POST', 'GET'])
 def destroy():
     '''
-        用户登入管理界面
+        销毁界面
     :return:
     '''
     if request.args.get('status') == "stop" or request.args.get('status') == "start":
         while True:
             # 销毁临时数据
-            fileOpen = open('TemplateData.txt', 'w')
+            fileOpen = open('TempTxt/TemplateData.txt', 'w')
             fileOpen.write("")
             fileOpen.close()
             print(request.args)
@@ -201,6 +201,21 @@ def destroy():
             # 等待六十秒重新再次清洗
             time.sleep(60 * 1)
         return redirect("/")
+
+@app.route("/intoCountUrl/")
+def intoCountUrl():
+    '''
+        广告跳转页面
+    :return:
+    '''
+#   首先记录一次
+    fileOpen = open('TempTxt/accessCount.txt', 'a+')
+    fileOpen.write(request.remote_addr)
+    fileOpen.write("\n")
+    fileOpen.close()
+#   随后跳转到相应的广告页面
+    return redirect("https://www.2faka.cn/store/16B5D4A3A745")
+
 
 
 if __name__ == '__main__':

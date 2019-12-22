@@ -29,11 +29,17 @@
         <div class="jumbotron" style="padding: 0;overflow: hidden;" id="jumbotron">
             {% for i in ImgData.items() %}
                 <a href="{{ i[0] }}" target="_blank" title="欢迎点击图片跳转相应页面查看详情......">
-                    <img src="{{ i[1] }}">
+                    <img src="{{ i[1] }}" style="height:100%;width: 100%;max-width: 100%">
                 </a>
             {% endfor %}
         </div>
 
+
+        <div class="jumbotron" style="padding: 0;overflow: hidden;" id="jumbotron">
+            <a href="/intoCountUrl" target="_blank" title="欢迎点击图片跳转相应页面查看详情......">
+                <img src="../static/img/ad.png" style="height:100%;width: 100%;max-width: 100%">
+            </a>
+        </div>
 
         <div class="panel panel panel-success">
             <div class="panel-heading">

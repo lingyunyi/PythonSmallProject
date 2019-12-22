@@ -28,7 +28,7 @@ def DataMaker():
         golbalData["BiliBili"] = {}
         Web_Shell.Get_BiliBili_Img(golbalData)
         # 到这里，又获得了经过WebShell处理的数据，这样数据就收集齐了。接下来就是序列化之后，导入文件中。
-        fileOpen = open('TemplateData.txt', 'wb')
+        fileOpen = open('TempTxt/TemplateData.txt', 'wb')
         pickle.dump(golbalData, fileOpen)
         fileOpen.close()
         # 好了，数据经过pickle序列化之后，已经成功存入临时文件中。

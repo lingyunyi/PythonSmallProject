@@ -32,7 +32,7 @@ class ReportingCenter(object):
         '''
         WriteList = []
         try:
-            fileRead = open('TempLostURL.txt', 'rb')
+            fileRead = open('TempTxt/TempLostURL.txt', 'rb')
             # 打开序列化过后的文件，进行反序列化处理
             ComparativeList = pickle.load(fileRead)
             fileRead.close()
@@ -46,7 +46,7 @@ class ReportingCenter(object):
             if WriteList != []:
                 for i in WriteList:
                     ComparativeList.append(i)
-        fileOpen = open('TempLostURL.txt', 'wb')
+        fileOpen = open('TempTxt/TempLostURL.txt', 'wb')
         pickle.dump(ComparativeList, fileOpen)
         fileOpen.close()
 
