@@ -1,0 +1,88 @@
+
+
+ul, li {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:link {
+    text-decoration: none;
+}
+
+#nav{
+    border-top: pink solid 4px;
+    border-bottom: #e4e7ec solid 1px;
+    background: linear-gradient(#fff 0%,#f1f3f5 100%);
+}
+
+
+#logo{
+    height: 90px;
+    line-height: 90px;
+}
+
+#banner:after {
+    content: "";
+    height: 10px;
+    background: rgba(0,0,0,0.2);
+    display: block;
+}
+
+#banner>section>div>div>div>ul{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    line-height: 90px;
+}
+#banner>section>div>div>div>ul>li>a{
+    font-size: 16px;
+    color: #000;
+}
+
+#banner>section>div>div>div>ul>li>a:hover{
+    background:pink;
+    color:#fff;
+    border-radius:4px;
+	text-decoration:none;
+    padding: 6px 30px;
+}
+
+#form{
+    /*display: flex;*/
+    /*align-items: center;*/
+    text-align: center;
+}
+
+.container .jumbotron, .container-fluid .jumbotron{
+    border-radius: 0px;
+}
+
+#show{
+    border: none;
+}
+
+#show>ul>li{
+    margin-top: 15px;
+
+
+}
+#show>ul>li{
+
+    border-radius: 12px;
+}
+#div2>button{
+    height: 74px;
+    border-radius: 30px;
+}
+
+@media screen and (max-width: 990px){
+    #div2>button{
+        height: auto;
+        width: 100%;
+    }
+}

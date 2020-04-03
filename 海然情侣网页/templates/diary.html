@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="referrer" content="no-referrer"/>
+    <link href="/static/css/all.css" rel="stylesheet" type="text/css">
+    {#    <meta http-equiv="refresh" content="5"/>#}
+    <title>海然情侣网页</title>
+    <style>
+
+    </style>
+</head>
+<body>
+
+
+<nav id="nav" class="navbar navbar-default" style="margin-bottom: 0px;min-height: 43px;">
+
+</nav>
+
+
+<div class="container-fluid" style="padding: 0" id="banner">
+    <section class="container" style="height: 90px;">
+        <div class="row">
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" id="logo">
+                <div class="row">
+                    <img src="/static/images/logo2.jpg" alt="" class="col-md-offset-2 col-lg-offset-2">
+                </div>
+            </div>
+            <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                <div class="row">
+                    <ul class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                        <li><a href="#">主页</a></li>
+                        <li><a href="#">聊天</a></li>
+                        <li><a href="/diary/">日志</a></li>
+                        <li><a href="/memorial_day/">纪念日</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="container" style="background: rgba(255, 255, 255, 0.5);padding-top: -3px">
+
+    <div class="jumbotron" style="padding: 0;overflow: hidden;" id="jumbotron">
+        {% for i in imglist %}
+            <a>
+                <img src="{{ i }}" style="height:100%;width: 100%;max-width: 100%">
+            </a>
+        {% endfor %}
+    </div>
+
+    <div class="panel panel panel-{{ color }} " id="form">
+        <form action="." class="row" style="margin: auto 0px;" method="post">
+            <div class="panel-heading col-xs-12 col-sm-12 col-md-11 col-lg-11">
+                <textarea class="form-control" rows="3" name="content" maxlength="80"></textarea>
+            </div>
+            <div class="panel-heading col-xs-12 col-sm-12 col-md-1 col-lg-1" id="div2">
+                <button type="submit" class="btn btn-{{ color }}" >我想说</button>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="panel panel panel-success" id="show">
+        <ul class="list-group ">
+            {% for row in bigdata %}
+                <li class="list-group-item list-group-item-{{ row.6 }}">
+                    <h4>{{ row.1 }}</h4>
+                    <h5 style="display: inline-block">{{ row.3 }}<h6 style="display: inline-block"><a href="./del/?nid={{ row.0 }}" >&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span></a></h6></h5>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+
+
+
+</div>
+
+
+
+</body>
+<script>
+    function randomNum(minNum, maxNum) {
+        switch (arguments.length) {
+            case 1:
+                return parseInt(Math.random() * minNum + 1, 10);
+                break;
+            case 2:
+                return parseInt(Math.random() * (maxNum - minNum + 1) + minNum, 10);
+                break;
+            default:
+                return 0;
+                break;
+        }
+    }
+
+    var ii = 0
+
+    randomImg();
+
+    function foriinImg() {
+        {#  循环播放  #}
+        var items = document.getElementById("jumbotron").getElementsByTagName("a");
+        for (var i = 0; i < items.length; i++) {
+            items[i].style.display = "none";
+        }
+        ;
+        items[ii].style.display = "block";
+        ii++
+        if (ii > (items.length - 1)) {
+            ii = 0
+        }
+    }
+
+    function randomImg() {
+        {#  随机播放  #}
+        var items = document.getElementById("jumbotron").getElementsByTagName("a");
+        for (var i = 0; i < items.length; i++) {
+            console.log(items.length)
+            items[i].style.display = "none";
+        }
+        ;
+        var randomint = randomNum(0, (items.length - 1))
+        items[randomint].style.display = "block";
+    }
+
+    window.setInterval(randomImg, 5000);
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous">
+</script>
+</html>
