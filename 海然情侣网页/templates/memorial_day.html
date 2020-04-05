@@ -58,10 +58,28 @@
     <div class="panel panel panel-{{ color }} " id="form">
         <form action="." class="row" style="margin: auto 0px;" method="post">
             <div class="panel-heading col-xs-12 col-sm-12 col-md-11 col-lg-11">
-                <textarea class="form-control" rows="3" name="content" maxlength="40"></textarea>
+                <textarea class="form-control" rows="1" name="content" maxlength="40"></textarea>
+                <div style="text-align: center" class=" col-xs-12 col-sm-12 col-md-12 col-lg-12 " style="display: inline-block">
+                    <select name="year" class=" col-xs-12 col-sm-12 col-md-4 col-lg-4 " style="text-align: center">
+                        {% for row in year %}
+                            <option value="{{ row }}">{{ row }}年</option>
+                        {% endfor %}
+                    </select>
+                    <select name="month" class=" col-xs-12 col-sm-12 col-md-4 col-lg-4 " style="text-align: center">
+                        {% for row in month %}
+                            <option value="{{ row }}">{{ row }}月</option>
+                        {% endfor %}
+                    </select>
+                    <select name="day" class=" col-xs-12 col-sm-12 col-md-4 col-lg-4 " style="text-align: center">
+                        {% for row in day %}
+                            <option  value="{{ row }}">{{ row }}日</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
             </div>
             <div class="panel-heading col-xs-12 col-sm-12 col-md-1 col-lg-1" id="div2">
-                <button type="submit" class="btn btn-{{ color }}" >我想说</button>
+                <button type="submit" class="btn btn-{{ color }}">我想说</button>
             </div>
         </form>
     </div>
@@ -71,20 +89,20 @@
         <ul class="list-group ">
             {% for row in bigdata %}
                 <li class="list-group-item list-group-item-{{ row.6 }}">
-                    <h4>{{ row.1 }}</h4>
+                    <h4>{{ row.2 }}</h4>
                     <br>
-                    <h5 ><span class="glyphicon glyphicon glyphicon-heart" aria-hidden="true"></span>&nbsp;&nbsp;&nbsp;至今已有<b>&nbsp;{{ row.5 }}&nbsp;</b>天</h5>
-                    <h5 style="display: inline-block">{{ row.3 }}<h6 style="display: inline-block"><a href="./del/?nid={{ row.0 }}" >&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span></a></h6></h5>
+                    <h5><span class="glyphicon glyphicon glyphicon-heart" aria-hidden="true"></span>&nbsp;&nbsp;&nbsp;至今已有<b>&nbsp;{{ row.0 }}&nbsp;</b>天
+                    </h5>
+                    <h5 style="display: inline-block">{{ row.4 }}<h6 style="display: inline-block"><a
+                            href="./del/?nid={{ row.1 }}">&nbsp;&nbsp;&nbsp;<span
+                            class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span></a></h6></h5>
                 </li>
             {% endfor %}
         </ul>
     </div>
 
 
-
-
 </div>
-
 
 
 </body>

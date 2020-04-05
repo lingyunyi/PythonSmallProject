@@ -1,4 +1,4 @@
-from django.http import request
+﻿from django.http import request
 from django.shortcuts import redirect,render,HttpResponse
 from .Tools.mysql_manager import SqlManger
 
@@ -77,6 +77,7 @@ def memorial_day(request):
         results = sqltool.search(sql)
         bigdata2,imglist,randomcolor = commond(results)
     # 如果请求为POST请求
+
     elif request.method == "POST":
 
         # 获取POST请求数据
@@ -89,10 +90,33 @@ def memorial_day(request):
             # 输入为空直接跳转，可做后续操作
             return redirect('/diary')
         # 注入过滤
+        if request.POST["year"] != "" and request.POST["month"] != "" and request.POST["day"] != "":
+            year = request.POST["year"]
+            month = request.POST["month"]
+            day = request.POST["day"]
+            now = "%s-%s-%s"%(year,month,day)
         sql = '''insert into memorial(content,create_day) values ('%s','%s')'''%(content,now)
         sqltool.insert(sql)
         return redirect('/memorial_day/')
-    return render(request, r"memorial_day.html",{"bigdata":bigdata2,"imglist":imglist,"color":randomcolor})
+
+    # 获取年月日
+    year = []
+    month = []
+    day = []
+    y_m_d = now.split("-")
+    for i in range(int(y_m_d[0])-30,int(y_m_d[0])+1):
+        year.append(i)
+    for i in range(0,int(y_m_d[1])):
+        month.append(i)
+    for i in range(0,int(y_m_d[2])):
+        month.append(i)
+    year.reverse()
+    month.reverse()
+    day.reverse()
+
+    return render(request, r"memorial_day.html",{"bigdata":bigdata2,"imglist":imglist,"color":randomcolor,
+                                                 "year":year,"month":month,"day":month,
+                                                 })
 
 
 def memorial_day_del(request):
@@ -123,10 +147,12 @@ def commond(results):
             span = (d2 - d1).days
             print(span)
             ii = list(i)
-            ii.append(span)
+            ii.insert(0,span)
             ii.append(random.choice(["success","info","warning","danger"]))
             bigdata2.append(ii)
-    print(bigdata2)
+    #         进行二维数据排列
+    bigdata3 = sorted(bigdata2, key = lambda x:x[0])
+    print("数据时",bigdata3)
     # 获取所有需要滚动的图片
     files = os.listdir("./static/images/switch_img")
     imglist = []
@@ -134,4 +160,4 @@ def commond(results):
         imglist.append("/static/images/switch_img/{}".format(i))
     print(imglist)
     randomcolor = random.choice(["success","info","warning","danger"])
-    return bigdata2,imglist,randomcolor
+    return bigdata3,imglist,randomcolor
