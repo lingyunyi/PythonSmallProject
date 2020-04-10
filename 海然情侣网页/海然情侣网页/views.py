@@ -106,16 +106,16 @@ def memorial_day(request):
     y_m_d = now.split("-")
     for i in range(int(y_m_d[0])-30,int(y_m_d[0])+1):
         year.append(i)
-    for i in range(0,int(y_m_d[1])):
+    for i in range(1,int(y_m_d[1])+1):
         month.append(i)
-    for i in range(0,int(y_m_d[2])):
-        month.append(i)
+    for i in range(1,int(y_m_d[2])+1):
+        day.append(i)
     year.reverse()
     month.reverse()
     day.reverse()
 
     return render(request, r"memorial_day.html",{"bigdata":bigdata2,"imglist":imglist,"color":randomcolor,
-                                                 "year":year,"month":month,"day":month,
+                                                 "year":year,"month":month,"day":day,
                                                  })
 
 
