@@ -1,25 +1,32 @@
-﻿import time
+import time
 import pymysql
 import datetime
 import hashlib
 
 class SqlManger(object):
 
-    def __init__(self):
+    def __init__(self,sql_ip="",sql_user="",sql_passwd="",sql_DB="passworddata"):
         '''
             暂无初始化内容
         '''
-        pass
+        self.sql_ip = str(sql_ip)
+        self.sql_user = str(sql_user)
+        self.sql_passwd = str(sql_passwd)
+        self.sql_DB = str(sql_DB)
+        self.connect_result = self.connect()
 
     def connect(self):
         '''
             # connent(参数列表[“IP地址”，“数据库账号”， “数据库密码”， “数据库名称”])
         :return:
         '''
-        self.db = pymysql.connect("*", "*", "*", "*")
-        # 使用cursor游标，创建一个游标对象cursor
-        self.cursor = self.db.cursor()
-        return True
+        try:
+            self.db = pymysql.connect(self.sql_ip, self.sql_user, self.sql_passwd ,self.sql_DB )
+            # 使用cursor游标，创建一个游标对象cursor
+            self.cursor = self.db.cursor()
+            return True
+        except BaseException as e:
+            return False
 
     def close(self):
         '''
@@ -33,30 +40,21 @@ class SqlManger(object):
 
     def search(self,sql):
         try:
-            # 连接服务器
-            self.connect()
             # 执行SQL语句
             self.cursor.execute(sql)
             # 获取数据库中的表单
             results = self.cursor.fetchall()
-            self.close()
             # 直接返回查询结果，返回的结果是一个元祖
             return results
         except:
-            # 如果发生错误则回滚
-            self.close()
             return False
 
     def insert(self, sql):
         try:
-            # 连接数据库
-            self.connect()
             # 执行sql语句
             self.cursor.execute(sql)
             # 提交到数据库执行
             self.db.commit()
-            # 关闭数据库
-            self.close()
             return True
         except:
             self.db.rollback()
@@ -120,8 +118,8 @@ class mainProcess(object):
 
 
 
-    def __init__(self):
-        self.sqlmanager = SqlManger()
+    def __init__(self,in_sql_ip,in_sql_user,in_sql_passwd,in_sql_DB):
+        self.sqlmanager = SqlManger(in_sql_ip,in_sql_user,in_sql_passwd,in_sql_DB)
         self.passwordHandle = passwordHandle()
         self.islogin = False
         self.setNumber = None
@@ -134,7 +132,6 @@ class mainProcess(object):
         except ValueError:
             pass
         return False
-
 
     def createAccount(self):
         account = input("请输入需要注册的账号：")
@@ -196,8 +193,6 @@ class mainProcess(object):
                 print("个人数字加密令牌已设置：%s" % (self.setNumber))
             else:
                 print("不支持数字以外令牌，请重新，使用重置个人数字令牌，重新设置个人数字令牌。")
-
-
 
     def addMyPasswd(self):
         if self.islogin == False or self.setNumber == None:
@@ -264,11 +259,10 @@ class mainProcess(object):
 class show(object):
 
     def __init__(self):
-        self.mainProcess = mainProcess()
+        # 展示系统版本
         self.printVersion()
-        while True:
-            self.showintoFunction()
-
+        # 开始让用户选择数据库
+        self.printSelectDB()
 
     def printVersion(self):
 
@@ -278,17 +272,61 @@ class show(object):
         '''
         print("\n")
         print("*************************************************")
+        print("****                                         ****")
         print("****           欢迎使用密码查询系统           ****")
-        print("****              版本：V1.9                 ****")
-        print("****              作者：匿名                 ****")
+        print("****                                         ****")
+        print("****              版本：V3.5                 ****")
+        print("****              作者：水兔工作室            ****")
         print("****                                         ****")
         print("*************************************************")
         time.sleep(1)
         print("\n")
 
 
+    def printSelectDB(self):
+
+        '''
+            版本界面
+        :return:
+        '''
+        print("*************************************************")
+        print("****                                         ****")
+        print("****             请选择使用的数据库            ****")
+        print("****                                         ****")
+        print("****              1.默认选择数据库            ****")
+        print("****              2.手动选择数据库            ****")
+        print("****                                         ****")
+        print("*************************************************")
+        time.sleep(1)
+        changeNumber = input("您的操作是？：")
+        # 1.默认选择数据库
+        if changeNumber == "1":
+            sql_ip = "139.159.236.66"
+            sql_user = "lingyunyi"
+            sql_passwd = "lingyunyi00"
+            sql_DB = "passworddata"
+            self.mainProcess = mainProcess(sql_ip,sql_user,sql_passwd,sql_DB)
+        # 2.手动选择数据库
+        elif changeNumber == "2":
+            sql_ip = input("请输入数据库地址：")
+            sql_user = input("请输入数据库账号：")
+            sql_passwd = input("请输入数据库密码：")
+            sql_DB = input("请输入数据库名称(默认为：passworddata)：")
+            print("请耐心等待，正在尝试连接......")
+            self.mainProcess = mainProcess(sql_ip,sql_user,sql_passwd,sql_DB)
+        else:
+            self.printSelectDB()
+        while self.mainProcess.sqlmanager.connect_result != True:
+            print("数据库异常，暂时无法连接，请检测网络配置......")
+            self.printSelectDB()
+        if self.mainProcess.sqlmanager.connect_result == True:
+            print("恭喜您，成功进入数据库：%s"%(sql_ip))
+            while True:
+                self.showintoFunction()
+
     def showintoFunction(self):
         print("*************************************************")
+        print("****                                         ****")
         print("*******           %s          ********" %self.mainProcess.loginUser)
         print("****              1、注册账号                 ****")
         print("****              2、登入账号                 ****")
@@ -297,6 +335,7 @@ class show(object):
         print("****              5、查询个人密码             ****")
         print("****              6、注销当前用户             ****")
         print("****              q、按q退出                  ****")
+        print("****                                         ****")
         print("*************************************************")
         time.sleep(1)
         changeNumber = input("您的操作是？：")
@@ -323,7 +362,4 @@ class show(object):
         else:
             print("小老弟你搞什么，不要乱按。")
 if __name__ == "__main__":
-
-
     a = show()
-
